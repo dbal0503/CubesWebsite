@@ -24,6 +24,12 @@ const monthly = (id: string, month: string, extra: Partial<TimedEvent> = {}): Ti
   month,
   ...extra,
 });
+const daily = (id: string, date: string, extra: Partial<TimedEvent> = {}): TimedEvent => ({
+  id,
+  title: id,
+  date,
+  ...extra,
+});
 
 describe("isPast", () => {
   const now = at("2026-11-20T21:00:00-05:00");
@@ -44,6 +50,14 @@ describe("isPast", () => {
   it("keeps a month-only event current through its month", () => {
     expect(isPast(monthly("this-month", "2026-11"), now)).toBe(false);
     expect(isPast(monthly("last-month", "2026-10"), now)).toBe(true);
+  });
+
+  it("keeps a day-only event current through its last day", () => {
+    expect(isPast(daily("today", "2026-11-20"), now)).toBe(false);
+    expect(isPast(daily("yesterday", "2026-11-19"), now)).toBe(true);
+    const asp = daily("asp", "2026-11-14", { endDate: "2026-11-15" });
+    expect(isPast(asp, at("2026-11-15T23:00:00-05:00"))).toBe(false);
+    expect(isPast(asp, at("2026-11-16T00:30:00-05:00"))).toBe(true);
   });
 
   it("uses Montreal time, not UTC, at month boundaries", () => {
@@ -75,6 +89,21 @@ describe("upcomingEvents and nextEvent", () => {
     ]);
   });
 
+  it("orders timed, then day-only, then month-only events within a month", () => {
+    const november = [
+      monthly("workshop", "2026-11"),
+      daily("cubesmas", "2026-11-27"),
+      dated("party", "2026-11-27T18:00:00-05:00"),
+      daily("asp", "2026-11-07", { endDate: "2026-11-08" }),
+    ];
+    expect(upcomingEvents(november, now).map((e) => e.id)).toEqual([
+      "asp",
+      "party",
+      "cubesmas",
+      "workshop",
+    ]);
+  });
+
   it("keeps file order for month-only events in the same month", () => {
     const october = [
       monthly("open-house", "2026-11", { position: 2 }),
@@ -101,6 +130,13 @@ describe("formatting", () => {
   it("labels month-only events as date TBA", () => {
     expect(formatMonth("2026-12")).toBe("December 2026");
     expect(formatWhen(monthly("cubesmas", "2026-12"))).toBe("December 2026 · date TBA");
+  });
+
+  it("shows day-only events and ranges without a time", () => {
+    expect(formatWhen(daily("cubesmas", "2026-11-27"))).toMatch(/^Fri, Nov\.? 27$/);
+    expect(formatWhen(daily("asp", "2026-11-07", { endDate: "2026-11-08" }))).toMatch(
+      /^Sat, Nov\.? 7 – Sun, Nov\.? 8$/,
+    );
   });
 
   it("shows the Montreal day and time for dated events", () => {

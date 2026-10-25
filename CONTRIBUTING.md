@@ -20,7 +20,7 @@ All site content lives in `src/content/`. Schemas in `src/lib/content-schemas.ts
 
 | What | Where | Format |
 |---|---|---|
-| Events | `src/content/events.yaml` | One list item per event: an exact `start`, or just a `month` until the date is set. Mark maybe-events `tentative: true`. Upcoming vs past is computed in the browser. |
+| Events | `src/content/events.yaml` | One list item per event with an exact `start` (date and time), a `date` (day, no time yet; `endDate` for multi-day), or just a `month` until it's scheduled. Mark maybe-events `tentative: true`. Upcoming vs past is computed in the browser. |
 | Team | `src/content/team.yaml` | One item per exec, sorted by `order` then name. |
 | Committees | `src/content/committees.yaml` | One group photo per committee. |
 | Sponsors | `src/content/sponsors.yaml` | One item per sponsor; logos go in `src/assets/sponsors/`. |

@@ -9,18 +9,27 @@ type ImageSchema<I extends z.ZodType> = () => I;
 
 const draft = z.boolean().default(false);
 
+// Quoted in YAML ("2026-11-27") so it stays a calendar day, not a UTC timestamp.
+const isoDay = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, "dates must look like 2026-11-27");
+
 export const eventSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z
     .object({
       title: z.string().min(1),
       /** Exact date and time, once confirmed. */
       start: z.coerce.date().optional(),
-      /** "YYYY-MM" for events planned for a month without a date yet. */
+      end: z.coerce.date().optional(),
+      /** "YYYY-MM-DD" when the day is set but not the time. */
+      date: isoDay.optional(),
+      /** "YYYY-MM-DD", last day of a multi-day `date` event. */
+      endDate: isoDay.optional(),
+      /** "YYYY-MM" while only the month is planned. */
       month: z
         .string()
         .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "month must look like 2026-12")
         .optional(),
-      end: z.coerce.date().optional(),
       /** Still being decided; shown with a "tentative" label. */
       tentative: z.boolean().default(false),
       location: z.string().min(1).optional(),
@@ -31,13 +40,17 @@ export const eventSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
       position: z.number().int().default(0),
       draft,
     })
-    .refine((e) => (e.start === undefined) !== (e.month === undefined), {
-      message: "set exactly one of start (exact date) or month (YYYY-MM)",
+    .refine((e) => [e.start, e.date, e.month].filter((v) => v !== undefined).length === 1, {
+      message: "set exactly one of start (date and time), date (YYYY-MM-DD) or month (YYYY-MM)",
       path: ["start"],
     })
     .refine((e) => !e.end || (e.start !== undefined && e.end >= e.start), {
       message: "end needs a start, and must be on or after it",
       path: ["end"],
+    })
+    .refine((e) => !e.endDate || (e.date !== undefined && e.endDate >= e.date), {
+      message: "endDate needs a date, and must be on or after it",
+      path: ["endDate"],
     });
 
 export const teamSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
