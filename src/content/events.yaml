@@ -82,9 +82,8 @@
 - id: open-house-winter-2027
   title: Open House
   month: "2027-02"
-- id: valentine-ll-2027
-  draft: true # what does "LL" stand for?
-  title: Valentine LL
+- id: valentines-lizard-lounge-2027
+  title: Valentine's Lizard Lounge
   month: "2027-02"
   tentative: true
 - id: revit-competition-2027
@@ -110,9 +109,8 @@
   tentative: true
 
 # April 2027
-- id: ll-april-2027
-  draft: true # what does "LL" stand for?
-  title: LL
+- id: lizard-lounge-april-2027
+  title: Lizard Lounge
   month: "2027-04"
   tentative: true
 - id: eca-banquet-2027
