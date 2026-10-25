@@ -19,8 +19,6 @@ const PHOTO_QUALITY = 85;
 const QB_MAX_PX = 1000;
 const LOGO_MAX_PX = 1200;
 
-const FAVICON_TILE = "#f4f0dc"; // --cream; the maroon mark alone disappears on dark tabs
-
 const root = path.resolve(process.argv[2] ?? "assets");
 const out = path.resolve("src/assets");
 const publicDir = path.resolve("public");
@@ -122,23 +120,17 @@ async function logoMark() {
     .toBuffer();
 }
 
-async function tile(mark, size, { rounded }) {
+const TRANSPARENT = { r: 0, g: 0, b: 0, alpha: 0 };
+
+async function icon(mark, size, { background = TRANSPARENT, fill = 0.94 } = {}) {
   // At tab sizes the mark's tapered strokes fade to a few faint pixels, so small
-  // icons fill more of the tile and get their stroke opacity boosted.
-  const small = size <= 48;
-  const inner = Math.round(size * (small ? 0.92 : 0.78));
-  let icon = sharp(mark).resize(inner, inner, {
-    fit: "contain",
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
-  });
-  if (small) icon = icon.ensureAlpha().linear([1, 1, 1, 2.5], [0, 0, 0, 0]);
-  icon = await icon.png().toBuffer();
-  const radius = rounded ? Math.round(size * 0.22) : 0;
-  const background = Buffer.from(
-    `<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${radius}" fill="${FAVICON_TILE}"/></svg>`,
-  );
-  return sharp(background)
-    .composite([{ input: icon, gravity: "center" }])
+  // icons get their stroke opacity boosted.
+  const inner = Math.round(size * fill);
+  let resized = sharp(mark).resize(inner, inner, { fit: "contain", background: TRANSPARENT });
+  if (size <= 48) resized = resized.ensureAlpha().linear([1, 1, 1, 2.5], [0, 0, 0, 0]);
+
+  return sharp({ create: { width: size, height: size, channels: 4, background } })
+    .composite([{ input: await resized.png().toBuffer(), gravity: "center" }])
     .png({ compressionLevel: 9 });
 }
 
@@ -146,10 +138,10 @@ async function exportFavicons() {
   await mkdir(publicDir, { recursive: true });
   const mark = await logoMark();
 
-  await (await tile(mark, 32, { rounded: true })).toFile(path.join(publicDir, "favicon-32.png"));
-  await (await tile(mark, 192, { rounded: true })).toFile(path.join(publicDir, "favicon-192.png"));
-  // iOS applies its own corner mask, so the touch icon stays square.
-  await (await tile(mark, 180, { rounded: false })).toFile(
+  await (await icon(mark, 32)).toFile(path.join(publicDir, "favicon-32.png"));
+  await (await icon(mark, 192)).toFile(path.join(publicDir, "favicon-192.png"));
+  // iOS renders transparency as black, so the home-screen icon gets a white backing.
+  await (await icon(mark, 180, { background: "#ffffff", fill: 0.78 })).toFile(
     path.join(publicDir, "apple-touch-icon.png"),
   );
 }
