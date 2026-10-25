@@ -1,8 +1,143 @@
 ---
-import UnderConstruction from "../components/UnderConstruction.astro";
+import EventCard from "../components/EventCard.astro";
+import NextEvent from "../components/NextEvent.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublished } from "../lib/content";
+import { toTimedEvent } from "../lib/event-entries";
+import { compareEvents, eventMonth, formatMonth, serializeEvent } from "../lib/events";
+
+const events = (await getPublished("events")).sort((a, b) =>
+  compareEvents(toTimedEvent(a), toTimedEvent(b)),
+);
+
+const months = new Map<string, typeof events>();
+for (const event of events) {
+  const month = eventMonth(toTimedEvent(event));
+  months.set(month, [...(months.get(month) ?? []), event]);
+}
 ---
 
-<BaseLayout title="Events">
-  <UnderConstruction title="Events" pose="microphone" />
+<BaseLayout
+  title="Events"
+  description="CUBES events for building engineering students at Concordia: workshops, networking, competitions and socials."
+>
+  <PageHeader
+    eyebrow="2026–27"
+    title="Events"
+    lead="Workshops, networking nights, competitions and socials all year long. Dates firm up as the year goes on."
+    pose="microphone"
+  >
+    <a class="button button-secondary" href={site.socials.instagram} rel="noopener" target="_blank">
+      Get updates on Instagram
+    </a>
+  </PageHeader>
+
+  <section class="container" aria-labelledby="next-up">
+    <div class="next">
+      <h2 id="next-up" class="eyebrow">Next up</h2>
+      <NextEvent events={events} />
+    </div>
+  </section>
+
+  <div class="container calendar" data-calendar>
+    <script type="application/json" data-events set:html={JSON.stringify(events.map((e) => serializeEvent(toTimedEvent(e))))} />
+    <div data-upcoming>
+      {
+        [...months].map(([month, monthEvents]) => (
+          <section class="month" data-month={month} aria-labelledby={`month-${month}`}>
+            <h2 id={`month-${month}`}>{formatMonth(month)}</h2>
+            <ul>
+              {monthEvents.map((event) => (
+                <li data-event-item={event.id}>
+                  <EventCard event={event} underMonthHeading />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+
+    <details class="past" data-past-months hidden>
+      <summary>Past events</summary>
+    </details>
+  </div>
 </BaseLayout>
+
+<script>
+  import { deserializeEvent, isPast, type SerializedEvent } from "../lib/events";
+
+  const calendar = document.querySelector<HTMLElement>("[data-calendar]");
+  const json = calendar?.querySelector("[data-events]")?.textContent ?? "[]";
+  const now = new Date();
+  const past = new Set(
+    (JSON.parse(json) as SerializedEvent[])
+      .map(deserializeEvent)
+      .filter((event) => isPast(event, now))
+      .map((event) => event.id),
+  );
+
+  for (const item of document.querySelectorAll<HTMLElement>("[data-event-item]")) {
+    item.toggleAttribute("data-past", past.has(item.dataset.eventItem ?? ""));
+  }
+
+  // Months that are entirely over move into the collapsed "Past events" section.
+  const pastMonths = document.querySelector<HTMLDetailsElement>("[data-past-months]");
+  for (const month of [...document.querySelectorAll<HTMLElement>("[data-month]")]) {
+    const items = [...month.querySelectorAll("[data-event-item]")];
+    if (pastMonths && items.every((item) => item.hasAttribute("data-past"))) {
+      pastMonths.append(month);
+      pastMonths.hidden = false;
+    }
+  }
+</script>
+
+<style>
+  .next {
+    max-width: 40rem;
+    margin-bottom: var(--space-7);
+  }
+
+  .month {
+    margin-bottom: var(--space-6);
+  }
+
+  .month h2 {
+    font-size: var(--step-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--line);
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .past {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .past summary {
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--maroon);
+  }
+
+  .past[open] summary {
+    margin-bottom: var(--space-5);
+  }
+
+  .past .month h2 {
+    color: var(--muted);
+  }
+</style>

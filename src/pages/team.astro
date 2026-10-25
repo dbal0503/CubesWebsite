@@ -1,8 +1,146 @@
 ---
-import UnderConstruction from "../components/UnderConstruction.astro";
+import { Image } from "astro:assets";
+import teamPhoto from "../assets/photos/Team_Photo.jpg";
+import PageHeader from "../components/PageHeader.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublished } from "../lib/content";
+
+const byOrderThenName = <T extends { data: { order: number; name: string } }>(a: T, b: T) =>
+  a.data.order - b.data.order || a.data.name.localeCompare(b.data.name);
+
+const members = (await getPublished("team")).sort(byOrderThenName);
+const committees = (await getPublished("committees")).sort(byOrderThenName);
 ---
 
-<BaseLayout title="Meet the Team">
-  <UnderConstruction title="Meet the Team" pose="group" />
+<BaseLayout
+  title="Team"
+  description="Meet the 2026–27 CUBES executive team at Concordia University."
+>
+  <PageHeader
+    eyebrow="2026–27 executive team"
+    title="Meet the team"
+    lead="The students behind CUBES: planning events, bringing in sponsors and making building engineering at Concordia a community."
+    pose="group"
+  />
+
+  <div class="container">
+    <figure class="group-photo">
+      <Image
+        src={teamPhoto}
+        alt="The CUBES executive team standing together in front of the Biosphère in Montreal"
+        widths={[800, 1200, 1600, 2000]}
+        sizes="(max-width: 72rem) 100vw, 72rem"
+        loading="eager"
+      />
+    </figure>
+
+    <section aria-labelledby="committees-heading">
+      <h2 id="committees-heading">Committees</h2>
+      <ul class="grid committees">
+        {
+          committees.map((committee) => (
+            <li>
+              <figure class="card">
+                <Image
+                  src={committee.data.photo}
+                  alt={`The CUBES ${committee.data.name}`}
+                  widths={[300, 500, 700]}
+                  sizes="(max-width: 40rem) 90vw, 17rem"
+                />
+                <figcaption>{committee.data.name}</figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="execs-heading">
+      <h2 id="execs-heading">Executives</h2>
+      <ul class="grid people">
+        {
+          members.map((member) => (
+            <li>
+              <figure class="card">
+                <Image
+                  src={member.data.photo}
+                  alt={member.data.name}
+                  widths={[240, 400, 600]}
+                  sizes="(max-width: 40rem) 45vw, 13rem"
+                />
+                <figcaption>
+                  <span class="name">{member.data.name}</span>
+                  {member.data.role && <span class="role">{member.data.role}</span>}
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
 </BaseLayout>
+
+<style>
+  .group-photo {
+    margin: 0 0 var(--space-8);
+  }
+
+  .group-photo :global(img) {
+    width: 100%;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  section {
+    margin-bottom: var(--space-8);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-5) var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .committees {
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .people {
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  }
+
+  .card {
+    margin: 0;
+  }
+
+  .card :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .committees .card :global(img) {
+    aspect-ratio: 3 / 4;
+  }
+
+  figcaption {
+    display: grid;
+    padding-top: var(--space-2);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--maroon);
+  }
+
+  .role {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+</style>

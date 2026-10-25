@@ -5,11 +5,11 @@ import { z } from "astro/zod";
  * fixtures directly. Collections that hold images take Astro's `image()`
  * helper; tests pass a string schema instead.
  */
-type ImageSchema = () => z.ZodType;
+type ImageSchema<I extends z.ZodType> = () => I;
 
 const draft = z.boolean().default(false);
 
-export const eventSchema = (image: ImageSchema) =>
+export const eventSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z
     .object({
       title: z.string().min(1),
@@ -27,6 +27,8 @@ export const eventSchema = (image: ImageSchema) =>
       description: z.string().min(1).optional(),
       image: image().optional(),
       rsvpUrl: z.url().optional(),
+      /** Index in events.yaml, added by the loader; breaks ties within a month. */
+      position: z.number().int().default(0),
       draft,
     })
     .refine((e) => (e.start === undefined) !== (e.month === undefined), {
@@ -38,7 +40,7 @@ export const eventSchema = (image: ImageSchema) =>
       path: ["end"],
     });
 
-export const teamSchema = (image: ImageSchema) =>
+export const teamSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z.object({
     name: z.string().min(1),
     role: z.string().min(1).optional(),
@@ -49,7 +51,7 @@ export const teamSchema = (image: ImageSchema) =>
     draft,
   });
 
-export const committeeSchema = (image: ImageSchema) =>
+export const committeeSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z.object({
     name: z.string().min(1),
     photo: image(),
@@ -59,7 +61,7 @@ export const committeeSchema = (image: ImageSchema) =>
 
 export const SPONSOR_TIERS = ["title", "gold", "silver", "bronze", "partner"] as const;
 
-export const sponsorSchema = (image: ImageSchema) =>
+export const sponsorSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z.object({
     name: z.string().min(1),
     logo: image(),
@@ -86,7 +88,7 @@ const optionGroupSchema = z.object({
   choices: z.array(choiceSchema).min(1),
 });
 
-export const productSchema = (image: ImageSchema) =>
+export const productSchema = <I extends z.ZodType>(image: ImageSchema<I>) =>
   z
     .object({
       name: z.string().min(1),

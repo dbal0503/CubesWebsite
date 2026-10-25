@@ -1,8 +1,139 @@
 ---
-import UnderConstruction from "../components/UnderConstruction.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Qb from "../components/Qb.astro";
+import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import type { QbPose } from "../lib/qb";
+import { withBase } from "../lib/url";
+
+// From the CUBES page on the ECA site (ecaconcordia.ca/societies/cubes).
+const ACTIVITIES: { title: string; text: string; pose: QbPose }[] = [
+  {
+    title: "ASP safety courses",
+    text: "Health and safety on the construction site, with part of the fee covered by CUBES.",
+    pose: "pointer",
+  },
+  {
+    title: "Networking nights",
+    text: "Networking cocktails with special guests and recruiters, plus wine & cheese nights.",
+    pose: "waiter",
+  },
+  {
+    title: "Conferences and site tours",
+    text: "Visits to building-technology conferences, expos and construction sites.",
+    pose: "microphone",
+  },
+  {
+    title: "Software tutorials",
+    text: "Hands-on AutoCAD and Revit sessions, plus tutorials before exams.",
+    pose: "laptop",
+  },
+  {
+    title: "Competitions",
+    text: "Design and consulting competitions where you solve real problems with a team.",
+    pose: "blueprints",
+  },
+  {
+    title: "Socials",
+    text: "Game nights, Lizard Lounge, Cubesmas and the gingerbread competition.",
+    pose: "dance",
+  },
+];
+
+const CONSTITUTION_URL =
+  "https://ecaconcordia.ca/wp-content/uploads/2022/03/2024-2025_CUBES_Constitution.pdf";
 ---
 
-<BaseLayout title="About CUBES">
-  <UnderConstruction title="About CUBES" pose="measuring" />
+<BaseLayout title="About" description={site.description}>
+  <PageHeader
+    eyebrow="About CUBES"
+    title="Beyond the classroom"
+    lead="CUBES, the Concordia University Building Engineering Society, represents Concordia's undergraduate building engineering students. Every dollar we raise goes back into the events and workshops students need."
+    pose="measuring"
+  />
+
+  <section class="container" aria-labelledby="what-we-do">
+    <h2 id="what-we-do">What we do</h2>
+    <ul class="activities">
+      {
+        ACTIVITIES.map((activity) => (
+          <li>
+            <Qb pose={activity.pose} width={96} />
+            <div>
+              <h3>{activity.title}</h3>
+              <p>{activity.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="more">
+      <a class="button button-primary" href={withBase("/events")}>See this year's events</a>
+      <a class="button button-secondary" href={withBase("/team")}>Meet the team</a>
+    </p>
+  </section>
+
+  <section class="container visit" aria-labelledby="find-us">
+    <div>
+      <h2 id="find-us">Find us</h2>
+      <p>
+        Our office is at <strong>{site.office}</strong>. Drop by, or reach us at
+        {" "}<a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.
+      </p>
+      <p>
+        CUBES is a society of the Engineering and Computer Science Association (ECA).
+        Read our <a href={CONSTITUTION_URL} rel="noopener" target="_blank">constitution (PDF)</a>.
+      </p>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  section {
+    margin-bottom: var(--space-8);
+  }
+
+  .activities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .activities li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .activities :global(img) {
+    width: 4.5rem;
+  }
+
+  h3 {
+    margin-bottom: var(--space-1);
+    font-size: var(--step-1);
+  }
+
+  .activities p {
+    margin: 0;
+  }
+
+  .more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .visit > div {
+    max-width: 40rem;
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatWhen } from "../lib/events";
+
+interface Props {
+  event: CollectionEntry<"events">;
+  headingLevel?: 2 | 3;
+  /** Under a month heading, month-only events just say "Date TBA". */
+  underMonthHeading?: boolean;
+}
+
+const { event, headingLevel = 3, underMonthHeading = false } = Astro.props;
+const { title, start, end, month, tentative, location, description, rsvpUrl } = event.data;
+const Heading = `h${headingLevel}` as "h2" | "h3";
+---
+
+<article class="event-card" data-event-id={event.id}>
+  <p class="when">
+    <time datetime={start?.toISOString() ?? month}>{formatWhen({ id: event.id, title, start, end, month }, { withMonth: !underMonthHeading })}</time>
+    {tentative && <span class="badge">Tentative</span>}
+    <span class="badge past-badge">Past</span>
+  </p>
+  <Heading class="title">{title}</Heading>
+  {location && <p class="location">{location}</p>}
+  {description && <p class="description">{description}</p>}
+  {
+    rsvpUrl && (
+      <a class="button button-primary" href={rsvpUrl} rel="noopener" target="_blank">
+        RSVP
+      </a>
+    )
+  }
+</article>
+
+<style>
+  .event-card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    height: 100%;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--maroon);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .when {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .badge {
+    padding: 0.1em 0.6em;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .past-badge {
+    display: none;
+  }
+
+  .title {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+
+  .location,
+  .description {
+    margin: 0;
+  }
+
+  .location {
+    color: var(--muted);
+  }
+
+  .button {
+    justify-self: start;
+    margin-top: var(--space-2);
+  }
+
+  :global([data-past]) > .event-card {
+    border-left-color: var(--line);
+    opacity: 0.75;
+  }
+
+  :global([data-past]) > .event-card .past-badge {
+    display: inline;
+  }
+</style>

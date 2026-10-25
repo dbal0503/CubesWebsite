@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { toTimedEvent } from "../lib/event-entries";
+import { nextEvent, serializeEvent } from "../lib/events";
+import EventCard from "./EventCard.astro";
+
+interface Props {
+  events: CollectionEntry<"events">[];
+}
+
+const { events } = Astro.props;
+const timed = events.map(toTimedEvent);
+// Build-time guess, shown until the script recomputes it with the visitor's clock.
+const fallback = events.find((e) => e.id === nextEvent(timed, new Date())?.id);
+---
+
+<div class="next-event" data-next-event>
+  <script type="application/json" data-events set:html={JSON.stringify(timed.map(serializeEvent))} />
+  <div data-slot>
+    {fallback ? <EventCard event={fallback} /> : <p data-empty>No events scheduled yet.</p>}
+  </div>
+  {
+    events.map((event) => (
+      <template data-event-template={event.id}>
+        <EventCard event={event} />
+      </template>
+    ))
+  }
+  <template data-empty-template>
+    <p>No events scheduled yet. Follow us on Instagram for announcements.</p>
+  </template>
+</div>
+
+<script>
+  import { deserializeEvent, nextEvent, type SerializedEvent } from "../lib/events";
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-next-event]")) {
+    const json = root.querySelector("[data-events]")?.textContent ?? "[]";
+    const events = (JSON.parse(json) as SerializedEvent[]).map(deserializeEvent);
+    const next = nextEvent(events, new Date());
+    const template = root.querySelector<HTMLTemplateElement>(
+      next ? `[data-event-template="${CSS.escape(next.id)}"]` : "[data-empty-template]",
+    );
+    const slot = root.querySelector("[data-slot]");
+    if (template && slot) slot.replaceChildren(template.content.cloneNode(true));
+  }
+</script>

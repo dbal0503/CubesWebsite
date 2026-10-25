@@ -1,8 +1,176 @@
 ---
-import UnderConstruction from "../components/UnderConstruction.astro";
+import { getEntry, render } from "astro:content";
+import PageHeader from "../components/PageHeader.astro";
+import Qb from "../components/Qb.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import type { QbPose } from "../lib/qb";
+
+// The page is built from QB's FAQ answers, so the chat and the page never disagree.
+const SECTIONS: { faq: string; pose: QbPose }[] = [
+  { faq: "building-vs-civil", pose: "lightbulb" },
+  { faq: "options", pose: "plank" },
+  { faq: "course-sequence", pose: "blueprints" },
+  { faq: "co-op", pose: "carryingCubes" },
+  { faq: "careers", pose: "thumbsUp" },
+];
+
+const sections = await Promise.all(
+  SECTIONS.map(async ({ faq, pose }) => {
+    const entry = await getEntry("faq", faq);
+    if (!entry) throw new Error(`Missing FAQ entry "${faq}"`);
+    const { Content } = await render(entry);
+    return { id: faq, pose, entry, Content };
+  }),
+);
+
+const SEQUENCE_PDF =
+  "https://www.concordia.ca/content/dam/ginacody/bcee/docs/BCEEWebsite/BCEECourseSequence/March2026/buildingengineeringsequence20260303.pdf";
 ---
 
-<BaseLayout title="Why Building Engineering">
-  <UnderConstruction title="Why Building Engineering" pose="lightbulb" />
+<BaseLayout
+  title="Why Building Engineering"
+  description="What building engineering is, how it differs from civil, and where it leads, from Concordia's program."
+>
+  <PageHeader
+    eyebrow="Thinking about the program?"
+    title="Why building engineering?"
+    lead="Building engineers design buildings as complete systems: the structure, the envelope, the energy they use and the comfort of the people inside. Here's what Concordia's program looks like."
+    pose="lightbulb"
+  >
+    <a class="button button-primary" href={SEQUENCE_PDF} rel="noopener" target="_blank">
+      Course sequence (PDF)
+    </a>
+  </PageHeader>
+
+  <nav class="container toc" aria-label="On this page">
+    <ul>
+      {
+        sections.map(({ id, entry }) => (
+          <li>
+            <a href={`#${id}`}>{entry.data.question}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="container sections">
+    {
+      sections.map(({ id, pose, entry, Content }, i) => (
+        <section id={id} class:list={["section", { flip: i % 2 === 1 }]}>
+          <div class="copy">
+            <h2>{entry.data.question}</h2>
+            <div class="prose">
+              <Content />
+            </div>
+            {entry.data.sources.length > 0 && (
+              <p class="sources">
+                Source:{" "}
+                {entry.data.sources.map((source, j) => (
+                  <>
+                    {j > 0 && " · "}
+                    <a href={source.url} rel="noopener" target="_blank">
+                      {source.label}
+                    </a>
+                  </>
+                ))}
+              </p>
+            )}
+          </div>
+          <Qb pose={pose} width={180} class="art" />
+        </section>
+      ))
+    }
+    <p class="disclaimer">
+      These answers summarize Concordia's official pages. Check the linked sources for the latest
+      program details.
+    </p>
+  </div>
 </BaseLayout>
+
+<style>
+  .toc ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0 0 var(--space-7);
+    padding: 0;
+  }
+
+  .toc a {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--paper);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    border-color: var(--maroon);
+  }
+
+  .section {
+    display: grid;
+    grid-template-columns: 1fr 12rem;
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 5rem;
+  }
+
+  .section.flip {
+    grid-template-columns: 12rem 1fr;
+  }
+
+  .copy {
+    max-width: 44rem;
+  }
+
+  .section.flip .copy {
+    order: 2;
+  }
+
+  h2 {
+    font-size: var(--step-2);
+  }
+
+  .prose :global(ul) {
+    padding-left: 1.2em;
+  }
+
+  .prose :global(li) {
+    margin-block: var(--space-1);
+  }
+
+  .sources,
+  .disclaimer {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .section :global(.art) {
+    justify-self: center;
+    width: 100%;
+    max-width: 12rem;
+  }
+
+  @media (max-width: 48rem) {
+    .section,
+    .section.flip {
+      grid-template-columns: 1fr;
+    }
+
+    .section.flip .copy {
+      order: 0;
+    }
+
+    .section :global(.art) {
+      display: none;
+    }
+  }
+</style>
