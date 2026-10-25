@@ -14,7 +14,9 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `pnpm build && pnpm preview --port ${PORT}`,
+    // --ignore-lock: astro preview exits early if a lock file says another
+    // preview server is running, which a crashed test run can leave behind.
+    command: `pnpm build && pnpm preview --port ${PORT} --ignore-lock`,
     url: `http://localhost:${PORT}/CubesWebsite/`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
