@@ -1,0 +1,23 @@
+---
+import { site } from "../data/site";
+import type { QbPose } from "../lib/qb";
+import PageHeader from "./PageHeader.astro";
+
+interface Props {
+  title: string;
+  pose: QbPose;
+}
+
+const { title, pose } = Astro.props;
+---
+
+<PageHeader
+  eyebrow="Under construction"
+  title={title}
+  lead="QB and the crew are still building this part of Cubesville."
+  pose={pose}
+>
+  <a class="button button-secondary" href={site.socials.instagram} rel="noopener" target="_blank">
+    Follow along on Instagram
+  </a>
+</PageHeader>

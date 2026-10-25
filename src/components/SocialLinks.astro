@@ -1,0 +1,79 @@
+---
+import { siFacebook, siInstagram, siTiktok } from "simple-icons";
+import { type SocialKey, site } from "../data/site";
+
+interface Props {
+  class?: string;
+}
+
+const LABELS: Record<SocialKey, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  linkedin: "LinkedIn",
+  tiktok: "TikTok",
+};
+
+// Simple Icons doesn't ship LinkedIn (removed at LinkedIn's request), so it gets a
+// plain rounded badge with "in" cut out, which works on any background.
+const PATHS: Record<SocialKey, string> = {
+  instagram: siInstagram.path,
+  facebook: siFacebook.path,
+  tiktok: siTiktok.path,
+  linkedin:
+    "M4 0h16a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4Z" +
+    "M5.4 6.9a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0Z" +
+    "M5.6 9.8h2.8v8.6H5.6Z" +
+    "M10.6 9.8h2.7V11c.5-.8 1.5-1.4 2.8-1.4 2.3 0 3.3 1.4 3.3 4v4.8h-2.8V14c0-1.2-.4-1.9-1.4-1.9s-1.8.7-1.8 2v4.3h-2.8Z",
+};
+
+const links = (Object.entries(site.socials) as [SocialKey, string | null][]).filter(
+  (entry): entry is [SocialKey, string] => entry[1] !== null,
+);
+---
+
+<ul class:list={["socials", Astro.props.class]}>
+  {
+    links.map(([key, href]) => (
+      <li>
+        <a href={href} rel="me noopener" target="_blank">
+          <svg
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            aria-hidden="true"
+            fill="currentColor"
+            fill-rule="evenodd"
+          >
+            <path d={PATHS[key]} />
+          </svg>
+          <span class="visually-hidden">{`${LABELS[key]} (opens in a new tab)`}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .socials {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    color: inherit;
+    transition: background-color 0.15s;
+  }
+
+  a:hover {
+    color: inherit;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+</style>

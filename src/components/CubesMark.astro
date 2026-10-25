@@ -1,0 +1,21 @@
+---
+interface Props {
+  class?: string;
+  /** Accessible name; omit when the mark sits next to visible "CUBES" text. */
+  title?: string;
+}
+
+const { class: className, title } = Astro.props;
+---
+
+<!-- Traced from cubeslogo.png (1080x1350 canvas coordinates). -->
+<svg
+  class={className}
+  viewBox="140 137 873 810"
+  fill="currentColor"
+  role={title ? "img" : undefined}
+  aria-hidden={title ? undefined : "true"}
+  aria-label={title}
+>
+  <polygon points="145,142 421,323 950,172 465,388 460,890 1008,692 456,942 340,830 435,882 412,375" />
+</svg>

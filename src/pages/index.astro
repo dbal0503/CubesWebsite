@@ -1,68 +1,131 @@
 ---
-import { Image } from "astro:assets";
-import logo from "../assets/brand/cubes-logo.png";
-import qbWave from "../assets/qb/qb-11.webp";
+import CubesMark from "../components/CubesMark.astro";
+import Qb from "../components/Qb.astro";
+import { NAV } from "../data/nav";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import { withBase } from "../lib/url";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CUBES · Concordia Building Engineering Students</title>
-    <link rel="icon" type="image/png" sizes="32x32" href={withBase("/favicon-32.png")} />
-    <link rel="icon" type="image/png" sizes="192x192" href={withBase("/favicon-192.png")} />
-    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
-    <meta
-      name="description"
-      content="CUBES, the building engineering student society at Concordia University."
-    />
-  </head>
-  <body>
-    <main>
-      <Image src={logo} alt="CUBES" width={220} />
-      <Image src={qbWave} alt="QB, the CUBES mascot, waving" width={180} />
-      <h1>Cubesville is under construction</h1>
-      <p>
-        Follow <a href="https://www.instagram.com/cubes.eca/">@cubes.eca</a> while we build.
-      </p>
-    </main>
-  </body>
-</html>
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="copy">
+        <p class="eyebrow">Welcome to Cubesville</p>
+        <h1>
+          <CubesMark class="hero-mark" />
+          <span class="visually-hidden">{site.name}: </span>{site.fullName}
+        </h1>
+        <p class="lead">{site.description}</p>
+        <div class="actions">
+          {
+            site.signupUrl && (
+              <a class="button button-primary" href={site.signupUrl}>
+                Join CUBES
+              </a>
+            )
+          }
+          <a class="button button-secondary" href={withBase("/events")}>See events</a>
+        </div>
+      </div>
+      <Qb pose="wave" width={320} alt="QB, the CUBES mascot, waving hello" loading="eager" class="hero-qb" />
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="visually-hidden">Explore Cubesville</h2>
+    <ul class="tiles">
+      {
+        NAV.map((item) => (
+          <li>
+            <a class="tile" href={withBase(item.href)}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
 
 <style>
-  :root {
-    --maroon: #8e3630;
-    --cream: #f4f0dc;
-    --ink: #2a1614;
+  .hero {
+    padding-block: var(--space-8) var(--space-7);
   }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
+  .hero-inner {
     display: grid;
-    place-items: center;
-    background: var(--cream);
-    color: var(--ink);
-    font-family: system-ui, sans-serif;
-    text-align: center;
-  }
-
-  main {
-    display: grid;
-    justify-items: center;
-    gap: 1rem;
-    padding: 1rem;
+    grid-template-columns: 1.3fr 1fr;
+    align-items: center;
+    gap: var(--space-6);
   }
 
   h1 {
-    color: var(--maroon);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: clamp(1.25rem, 4vw, 2rem);
+    display: grid;
+    gap: var(--space-4);
   }
 
-  a {
+  h1 :global(.hero-mark) {
+    width: clamp(3.5rem, 8vw, 5rem);
+    height: auto;
     color: var(--maroon);
+  }
+
+  .lead {
+    max-width: 36rem;
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .hero :global(.hero-qb) {
+    justify-self: center;
+    width: clamp(180px, 28vw, 320px);
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tile {
+    display: flex;
+    align-items: end;
+    min-height: 6rem;
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--maroon);
+    transition: transform 0.15s;
+  }
+
+  .tile:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 48rem) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+    }
+
+    .hero :global(.hero-qb) {
+      grid-row: 1;
+      width: 180px;
+    }
   }
 </style>

@@ -1,0 +1,59 @@
+---
+import type { QbPose } from "../lib/qb";
+import Qb from "./Qb.astro";
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  lead?: string;
+  pose?: QbPose;
+}
+
+const { title, eyebrow, lead, pose } = Astro.props;
+---
+
+<section class="page-header">
+  <div class="container inner">
+    <div class="copy">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {lead && <p class="lead">{lead}</p>}
+      <slot />
+    </div>
+    {pose && <Qb pose={pose} width={240} loading="eager" class="qb" />}
+  </div>
+</section>
+
+<style>
+  .page-header {
+    padding-block: var(--space-7) var(--space-6);
+  }
+
+  .inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .lead {
+    max-width: 40rem;
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .page-header :global(.qb) {
+    width: clamp(140px, 22vw, 240px);
+  }
+
+  @media (max-width: 40rem) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+
+    .page-header :global(.qb) {
+      grid-row: 1;
+      width: 140px;
+    }
+  }
+</style>

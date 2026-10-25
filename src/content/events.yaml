@@ -1,0 +1,130 @@
+# CUBES events for the 2026–27 year.
+#
+# Each event has either an exact `start` (with Montreal offset, e.g.
+# 2026-12-05T18:00:00-05:00) or just a `month` ("2026-12") while the date is
+# still open. Swap `month` for `start` once a date is confirmed.
+# `tentative: true` marks events that might not happen (the "?" items).
+# Upcoming vs past is computed in the visitor's browser.
+#
+# Fields: id, title, start | month, end (optional), tentative, location (optional),
+#         description (optional), image (optional, path relative to this file),
+#         rsvpUrl (optional), draft
+
+# September 2026
+- id: oday-fall-2026
+  title: O-Day
+  month: "2026-09"
+- id: frosh-fall-2026
+  title: Frosh
+  month: "2026-09"
+- id: outreach-2026
+  title: High School & CEGEP Outreach
+  month: "2026-09"
+  tentative: true
+
+# October 2026
+- id: revit-autocad-tutorial-2026
+  title: Revit & AutoCAD Tutorial
+  month: "2026-10"
+  tentative: true
+  description: Hands-on tutorial on AutoCAD and Revit.
+- id: wine-and-cheese-fall-2026
+  title: Wine & Cheese
+  month: "2026-10"
+- id: open-house-fall-2026
+  title: Open House
+  month: "2026-10"
+- id: site-tour-fall-2026
+  title: Site Tour
+  month: "2026-10"
+  tentative: true
+
+# November 2026
+- id: asp-course-part-1-2026
+  title: ASP Course, Part 1
+  month: "2026-11"
+  tentative: true
+  description: Health and safety on the construction site (ASP Construction), with part of the fee covered by CUBES.
+- id: workshop-fall-2026
+  title: Workshop
+  month: "2026-11"
+  tentative: true
+- id: industry-talk-fall-2026
+  title: Industry Conference Talk
+  month: "2026-11"
+  tentative: true
+  description: A talk from an industry partner, such as Cecobois.
+
+# December 2026
+- id: gingerbread-competition-2026
+  title: Gingerbread Competition
+  month: "2026-12"
+- id: cubesmas-2026
+  title: Cubesmas
+  month: "2026-12"
+- id: exam-tutorials-fall-2026
+  title: Exam Tutorials
+  month: "2026-12"
+  tentative: true
+
+# January 2027
+- id: oday-winter-2027
+  title: O-Day
+  month: "2027-01"
+- id: frosh-winter-2027
+  title: Frosh
+  month: "2027-01"
+
+# February 2027
+- id: wine-and-cheese-winter-2027
+  title: Wine & Cheese
+  month: "2027-02"
+- id: open-house-winter-2027
+  title: Open House
+  month: "2027-02"
+- id: valentine-ll-2027
+  draft: true # what does "LL" stand for?
+  title: Valentine LL
+  month: "2027-02"
+  tentative: true
+- id: revit-competition-2027
+  title: Revit Competition
+  month: "2027-02"
+  tentative: true
+
+# March 2027
+- id: asp-course-2027
+  title: ASP Course
+  month: "2027-03"
+  description: Health and safety on the construction site (ASP Construction), with part of the fee covered by CUBES.
+- id: engweek-2027
+  title: Engineering Week
+  month: "2027-03"
+- id: site-tour-winter-2027
+  title: Site Tour
+  month: "2027-03"
+  tentative: true
+- id: workshop-winter-2027
+  title: Workshop or Conference
+  month: "2027-03"
+  tentative: true
+
+# April 2027
+- id: ll-april-2027
+  draft: true # what does "LL" stand for?
+  title: LL
+  month: "2027-04"
+  tentative: true
+- id: eca-banquet-2027
+  title: ECA Banquet
+  month: "2027-04"
+- id: exam-tutorials-winter-2027
+  title: Exam Tutorials
+  month: "2027-04"
+  tentative: true
+
+# July 2027
+- id: icebox-competition-2027
+  title: Icebox Competition
+  month: "2027-07"
+  tentative: true
