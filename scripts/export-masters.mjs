@@ -8,6 +8,7 @@
 //   Chosen pictures/*.jpg   team photos   -> src/assets/photos/img-0406.jpg
 //   Cubes Design/<n>.png    QB poses      -> src/assets/qb/qb-01.webp
 //   cubeslogo.png           logo          -> src/assets/brand/cubes-logo.png
+//                           cube mark     -> public/favicon-*.png, public/apple-touch-icon.png
 
 import { mkdir, readdir } from "node:fs/promises";
 import path from "node:path";
@@ -18,8 +19,11 @@ const PHOTO_QUALITY = 85;
 const QB_MAX_PX = 1000;
 const LOGO_MAX_PX = 1200;
 
+const FAVICON_TILE = "#f4f0dc"; // --cream; the maroon mark alone disappears on dark tabs
+
 const root = path.resolve(process.argv[2] ?? "assets");
 const out = path.resolve("src/assets");
+const publicDir = path.resolve("public");
 
 async function findEntry(dir, name) {
   const entries = await readdir(dir);
@@ -81,7 +85,77 @@ async function exportLogo() {
     .toFile(path.join(dest, "cubes-logo.png"));
 }
 
+// The cube mark without the "CUBES" wordmark, which is unreadable at favicon
+// sizes. The mark ends at the tallest band of empty rows above the wordmark.
+async function logoMark() {
+  const src = await findEntry(root, "cubeslogo.png");
+  const trimmed = await sharp(src).trim().png().toBuffer();
+  const { data, info } = await sharp(trimmed)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const isBlankRow = (y) => {
+    for (let x = 0; x < info.width; x++) {
+      const i = (y * info.width + x) * info.channels;
+      const white = data[i] > 230 && data[i + 1] > 230 && data[i + 2] > 230;
+      if (data[i + 3] > 40 && !white) return false;
+    }
+    return true;
+  };
+
+  let best = { start: info.height, length: 0 };
+  let start = -1;
+  for (let y = 0; y <= info.height; y++) {
+    const blank = y < info.height && isBlankRow(y);
+    if (blank && start < 0) start = y;
+    if (!blank && start >= 0) {
+      if (y - start > best.length) best = { start, length: y - start };
+      start = -1;
+    }
+  }
+
+  return sharp(trimmed)
+    .extract({ left: 0, top: 0, width: info.width, height: best.start })
+    .trim()
+    .png()
+    .toBuffer();
+}
+
+async function tile(mark, size, { rounded }) {
+  // At tab sizes the mark's tapered strokes fade to a few faint pixels, so small
+  // icons fill more of the tile and get their stroke opacity boosted.
+  const small = size <= 48;
+  const inner = Math.round(size * (small ? 0.92 : 0.78));
+  let icon = sharp(mark).resize(inner, inner, {
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  });
+  if (small) icon = icon.ensureAlpha().linear([1, 1, 1, 2.5], [0, 0, 0, 0]);
+  icon = await icon.png().toBuffer();
+  const radius = rounded ? Math.round(size * 0.22) : 0;
+  const background = Buffer.from(
+    `<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${radius}" fill="${FAVICON_TILE}"/></svg>`,
+  );
+  return sharp(background)
+    .composite([{ input: icon, gravity: "center" }])
+    .png({ compressionLevel: 9 });
+}
+
+async function exportFavicons() {
+  await mkdir(publicDir, { recursive: true });
+  const mark = await logoMark();
+
+  await (await tile(mark, 32, { rounded: true })).toFile(path.join(publicDir, "favicon-32.png"));
+  await (await tile(mark, 192, { rounded: true })).toFile(path.join(publicDir, "favicon-192.png"));
+  // iOS applies its own corner mask, so the touch icon stays square.
+  await (await tile(mark, 180, { rounded: false })).toFile(
+    path.join(publicDir, "apple-touch-icon.png"),
+  );
+}
+
 const photos = await exportPhotos();
 const poses = await exportQbPoses();
 await exportLogo();
-console.log(`Exported ${photos} photos, ${poses} QB poses and the logo to ${out}`);
+await exportFavicons();
+console.log(`Exported ${photos} photos, ${poses} QB poses, the logo and favicons`);

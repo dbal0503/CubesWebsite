@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import logo from "../assets/brand/cubes-logo.png";
 import qbWave from "../assets/qb/qb-11.webp";
+import { withBase } from "../lib/url";
 ---
 
 <html lang="en">
@@ -9,6 +10,9 @@ import qbWave from "../assets/qb/qb-11.webp";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CUBES · Concordia Building Engineering Students</title>
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase("/favicon-32.png")} />
+    <link rel="icon" type="image/png" sizes="192x192" href={withBase("/favicon-192.png")} />
+    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
     <meta
       name="description"
       content="CUBES, the building engineering student society at Concordia University."
