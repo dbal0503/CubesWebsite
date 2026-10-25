@@ -1,0 +1,35 @@
+{
+  "name": "cubes-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "export-masters": "node scripts/export-masters.mjs"
+  },
+  "dependencies": {
+    "@astrojs/preact": "6.1.1",
+    "astro": "7.4.2",
+    "preact": "11.0.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@biomejs/biome": "2.5.15",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "sharp": "0.35.5",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}
