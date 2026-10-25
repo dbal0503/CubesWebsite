@@ -20,8 +20,9 @@ All site content lives in `src/content/`. Schemas in `src/lib/content-schemas.ts
 
 | What | Where | Format |
 |---|---|---|
-| Events | `src/content/events.yaml` | One list item per event. Upcoming vs past is computed in the browser. |
-| Team | `src/content/team.yaml` | One item per exec, sorted by `order`. |
+| Events | `src/content/events.yaml` | One list item per event: an exact `start`, or just a `month` until the date is set. Mark maybe-events `tentative: true`. Upcoming vs past is computed in the browser. |
+| Team | `src/content/team.yaml` | One item per exec, sorted by `order` then name. |
+| Committees | `src/content/committees.yaml` | One group photo per committee. |
 | Sponsors | `src/content/sponsors.yaml` | One item per sponsor; logos go in `src/assets/sponsors/`. |
 | Merch | `src/content/products/<slug>.md` | Frontmatter for price and options; the body is the description. |
 | FAQ (QB chat) | `src/content/faq/<id>.md` | Frontmatter for question, keywords and sources; the body is the answer. |
@@ -46,7 +47,9 @@ To add or update images:
 
 | Drive folder | Output | Processing |
 |---|---|---|
-| `Chosen pictures/*.jpg` | `src/assets/photos/img-0406.jpg` | Max 2000 px, JPEG q85, metadata stripped (no GPS) |
+| `Chosen pictures/*.jpg` | `src/assets/photos/<same name>.jpg` | Max 2000 px, JPEG q85, metadata stripped (no GPS). Name files after the person or group, e.g. `Ailema_Jimenez.jpg`. |
+| `Merch/*.jpg` | `src/assets/merch/<same name>.jpg` | Same as photos |
+| `Merch/*.png` | `src/assets/merch/<same name>.webp` | Product shots: max 1200 px, WebP with transparency |
 | `Cubes Design/<n>.png` | `src/assets/qb/qb-NN.webp` | Trimmed, max 1000 px, WebP with transparency |
 | `cubeslogo.png` | `src/assets/brand/cubes-logo.png` | Trimmed, max 1200 px |
 

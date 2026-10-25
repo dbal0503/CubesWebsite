@@ -11,8 +11,8 @@ export const site = {
   socials: {
     instagram: "https://www.instagram.com/cubes.eca/",
     facebook: "https://www.facebook.com/CUBES.eca/",
-    linkedin: null as string | null,
-    tiktok: null as string | null,
+    linkedin: "https://www.linkedin.com/in/cubes-co-presidents-253277385/" as string | null,
+    tiktok: "https://www.tiktok.com/@cubes.eca" as string | null,
   },
   signupUrl: null as string | null,
   contactEmail: "president.cubes@ecaconcordia.ca",

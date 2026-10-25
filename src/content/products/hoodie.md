@@ -1,9 +1,12 @@
 ---
 name: Building Engineering Hoodie
 order: 1
-# Placeholder until the execs send product photos.
 photos:
-  - ../../assets/qb/qb-12.webp
+  - ../../assets/merch/hoodie_black.webp
+  - ../../assets/merch/hoodie_brown.webp
+  - ../../assets/merch/all_hoodies_back.webp
+  - ../../assets/merch/Brown_Hoodie_Green_Crewneck_2.jpg
+  - ../../assets/merch/Brown_Hoodie_Green_Crewneck_1.jpg
 basePrice: 45
 optionGroups:
   - name: Logo

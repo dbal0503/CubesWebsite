@@ -1,11 +1,89 @@
-# Exec team, shown in `order`. Photos live in src/assets/photos/
-# (see CONTRIBUTING.md for how to export them from the Drive).
+# Exec team, sorted by `order` then name. Photos live in src/assets/photos/
+# (named after the person; see CONTRIBUTING.md for exporting from the Drive).
 #
-# Fields: id, name, role, photo (path relative to this file), order, draft
+# Fields: id, name, role (optional), committee (optional, id from committees.yaml),
+#         photo (path relative to this file), order (optional), draft
 
-- id: example-president
-  draft: true
-  name: Firstname Lastname
-  role: President
-  photo: ../assets/photos/img-0406.jpg
-  order: 1
+- id: ailema-jimenez
+  name: Ailema Jimenez
+  photo: ../assets/photos/Ailema_Jimenez.jpg
+
+- id: ali-chehab
+  name: Ali Chehab
+  photo: ../assets/photos/Ali_Chehab.jpg
+
+- id: amina-taleb
+  name: Amina Taleb
+  photo: ../assets/photos/Amina_Taleb.jpg
+
+- id: anthony-napolitano
+  name: Anthony Napolitano
+  photo: ../assets/photos/Anthony_Napolitano.jpg
+
+- id: ava-girling
+  name: Ava Girling
+  photo: ../assets/photos/Ava_Girling.jpg
+
+- id: charlotte-thess
+  name: Charlotte Thess
+  photo: ../assets/photos/Charlotte_Thess.jpg
+
+- id: emna-kaddour
+  name: Emna Kaddour
+  photo: ../assets/photos/Emna_Kaddour.jpg
+
+- id: francisco-carrera
+  name: Francisco Carrera
+  photo: ../assets/photos/Francisco_Carrera.jpg
+
+- id: jean-paul-bou-sleiman
+  name: Jean-Paul Bou-Sleiman
+  photo: ../assets/photos/Jean-Paul_Bou-Sleiman.jpg
+
+- id: joerika-nabor
+  name: Joerika Nabor
+  photo: ../assets/photos/Joerika_Nabor.jpg
+
+- id: karim-abushaar
+  name: Karim Abushaar
+  photo: ../assets/photos/Karim_Abushaar.jpg
+
+- id: laszlo-rigo
+  name: Laszlo Rigo
+  photo: ../assets/photos/Laszlo_Rigo.jpg
+
+- id: lorna-papa
+  name: Lorna Papa
+  photo: ../assets/photos/Lorna_Papa.jpg
+
+- id: manon-desquesses
+  name: Manon Desquesses
+  photo: ../assets/photos/Manon_Desquesses.jpg
+
+- id: miyana-neves
+  name: Miyana Neves
+  photo: ../assets/photos/Miyana_Neves.jpg
+
+- id: nayeema-rahman
+  name: Nayeema Rahman
+  photo: ../assets/photos/Nayeema_Rahman.jpg
+
+- id: nicolas-fredette
+  name: Nicolas Fredette
+  photo: ../assets/photos/Nicolas_Fredette.jpg
+
+- id: oliva-cliche
+  name: Oliva Cliche
+  photo: ../assets/photos/Oliva_Cliche.jpg
+
+- id: ronasio-shenouda
+  name: Ronasio Shenouda
+  photo: ../assets/photos/Ronasio_Shenouda.jpg
+
+- id: sean-selinsky
+  name: Sean Selinsky
+  photo: ../assets/photos/Sean_Selinsky.jpg
+
+- id: william-carlier
+  name: William Carlier
+  photo: ../assets/photos/William_Carlier.jpg

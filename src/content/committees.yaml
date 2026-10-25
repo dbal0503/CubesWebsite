@@ -1,0 +1,39 @@
+# Committee group photos for the team page, sorted by `order`.
+# The whole-team photo (src/assets/photos/Team_Photo.jpg) is used directly by the page.
+#
+# Fields: id, name, photo (path relative to this file), order, draft
+
+- id: co-presidents
+  name: Co-Presidents
+  photo: ../assets/photos/CoPresidents.jpg
+  order: 1
+
+- id: chairs
+  name: Chairs
+  photo: ../assets/photos/Chairs.jpg
+  order: 2
+
+- id: events
+  name: Events Team
+  photo: ../assets/photos/Events_Team.jpg
+  order: 3
+
+- id: external
+  name: External Team
+  photo: ../assets/photos/External_Team.jpg
+  order: 4
+
+- id: sponsorship
+  name: Sponsorship Team
+  photo: ../assets/photos/Sponsorship_Team.jpg
+  order: 5
+
+- id: marketing
+  name: Marketing Team
+  photo: ../assets/photos/Marketing_Team.jpg
+  order: 6
+
+- id: social
+  name: Social Team
+  photo: ../assets/photos/Social_Team.jpg
+  order: 7

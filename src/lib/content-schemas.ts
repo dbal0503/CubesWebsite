@@ -13,25 +13,47 @@ export const eventSchema = (image: ImageSchema) =>
   z
     .object({
       title: z.string().min(1),
-      start: z.coerce.date(),
+      /** Exact date and time, once confirmed. */
+      start: z.coerce.date().optional(),
+      /** "YYYY-MM" for events planned for a month without a date yet. */
+      month: z
+        .string()
+        .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "month must look like 2026-12")
+        .optional(),
       end: z.coerce.date().optional(),
-      location: z.string().min(1),
-      description: z.string().min(1),
+      /** Still being decided; shown with a "tentative" label. */
+      tentative: z.boolean().default(false),
+      location: z.string().min(1).optional(),
+      description: z.string().min(1).optional(),
       image: image().optional(),
       rsvpUrl: z.url().optional(),
       draft,
     })
-    .refine((e) => !e.end || e.end >= e.start, {
-      message: "end must be on or after start",
+    .refine((e) => (e.start === undefined) !== (e.month === undefined), {
+      message: "set exactly one of start (exact date) or month (YYYY-MM)",
+      path: ["start"],
+    })
+    .refine((e) => !e.end || (e.start !== undefined && e.end >= e.start), {
+      message: "end needs a start, and must be on or after it",
       path: ["end"],
     });
 
 export const teamSchema = (image: ImageSchema) =>
   z.object({
     name: z.string().min(1),
-    role: z.string().min(1),
+    role: z.string().min(1).optional(),
+    /** Id of the committee this person belongs to (see committees.yaml). */
+    committee: z.string().optional(),
     photo: image(),
-    order: z.number().int(),
+    order: z.number().int().default(100),
+    draft,
+  });
+
+export const committeeSchema = (image: ImageSchema) =>
+  z.object({
+    name: z.string().min(1),
+    photo: image(),
+    order: z.number().int().default(100),
     draft,
   });
 

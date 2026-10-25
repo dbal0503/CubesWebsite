@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { file, glob } from "astro/loaders";
 import {
+  committeeSchema,
   eventSchema,
   faqSchema,
   productSchema,
@@ -18,6 +19,11 @@ const team = defineCollection({
   schema: ({ image }) => teamSchema(image),
 });
 
+const committees = defineCollection({
+  loader: file("src/content/committees.yaml"),
+  schema: ({ image }) => committeeSchema(image),
+});
+
 const sponsors = defineCollection({
   loader: file("src/content/sponsors.yaml"),
   schema: ({ image }) => sponsorSchema(image),
@@ -33,4 +39,4 @@ const faq = defineCollection({
   schema: faqSchema,
 });
 
-export const collections = { events, team, sponsors, products, faq };
+export const collections = { events, team, committees, sponsors, products, faq };

@@ -98,16 +98,35 @@ describe("eventSchema", () => {
     description: "Meet recruiters",
   };
 
-  it("parses dates and defaults draft to false", () => {
+  it("parses dates and defaults draft and tentative to false", () => {
     const result = event.safeParse(base);
     expect(issues(result)).toBe("");
-    expect(result.data?.start.toISOString()).toBe("2026-11-20T23:00:00.000Z");
+    expect(result.data?.start?.toISOString()).toBe("2026-11-20T23:00:00.000Z");
     expect(result.data?.draft).toBe(false);
+    expect(result.data?.tentative).toBe(false);
   });
 
-  it("rejects an end before the start", () => {
-    const result = event.safeParse({ ...base, end: "2026-11-20T17:00:00-05:00" });
-    expect(issues(result)).toMatch(/end must be on or after start/);
+  it("accepts a month-only event with no location or description", () => {
+    const result = event.safeParse({ title: "Cubesmas", month: "2026-12", tentative: true });
+    expect(issues(result)).toBe("");
+  });
+
+  it("requires exactly one of start or month", () => {
+    expect(issues(event.safeParse({ title: "Cubesmas" }))).toMatch(/exactly one of start/);
+    expect(issues(event.safeParse({ ...base, month: "2026-11" }))).toMatch(/exactly one of start/);
+  });
+
+  it("rejects malformed months", () => {
+    expect(issues(event.safeParse({ title: "Cubesmas", month: "2026-13" }))).toMatch(
+      /month must look like/,
+    );
+  });
+
+  it("rejects an end before the start, or an end without a start", () => {
+    const early = event.safeParse({ ...base, end: "2026-11-20T17:00:00-05:00" });
+    expect(issues(early)).toMatch(/must be on or after it/);
+    const noStart = event.safeParse({ title: "Cubesmas", month: "2026-12", end: "2026-12-05" });
+    expect(issues(noStart)).toMatch(/end needs a start/);
   });
 });
 

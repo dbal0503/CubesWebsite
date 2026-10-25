@@ -4,8 +4,11 @@
 //
 //   pnpm export-masters [path-to-drive-folder]   (default: ./assets)
 //
-// Expected layout of the Drive folder (folder names are matched case-insensitively):
-//   Chosen pictures/*.jpg   team photos   -> src/assets/photos/img-0406.jpg
+// Expected layout of the Drive folder (folder names are matched case-insensitively).
+// Photos keep their file names, so name them on the Drive (e.g. Ailema_Jimenez.jpg).
+//   Chosen pictures/*.jpg   team photos   -> src/assets/photos/<name>.jpg
+//   Merch/*.png             product shots -> src/assets/merch/<name>.webp
+//   Merch/*.jpg             merch photos  -> src/assets/merch/<name>.jpg
 //   Cubes Design/<n>.png    QB poses      -> src/assets/qb/qb-01.webp
 //   cubeslogo.png           logo          -> src/assets/brand/cubes-logo.png
 //                           cube mark     -> public/favicon-*.png, public/apple-touch-icon.png
@@ -16,6 +19,7 @@ import sharp from "sharp";
 
 const PHOTO_MAX_PX = 2000;
 const PHOTO_QUALITY = 85;
+const PRODUCT_MAX_PX = 1200;
 const QB_MAX_PX = 1000;
 const LOGO_MAX_PX = 1200;
 
@@ -35,6 +39,16 @@ async function listFiles(dir, extensions) {
   return entries.filter((e) => extensions.includes(path.extname(e).toLowerCase())).sort();
 }
 
+function exportJpeg(srcFile, destFile) {
+  // rotate() applies the EXIF orientation; sharp drops the rest of the
+  // metadata (camera, GPS) unless asked to keep it.
+  return sharp(srcFile)
+    .rotate()
+    .resize(PHOTO_MAX_PX, PHOTO_MAX_PX, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: PHOTO_QUALITY, mozjpeg: true })
+    .toFile(destFile);
+}
+
 async function exportPhotos() {
   const src = await findEntry(root, "Chosen pictures");
   const dest = path.join(out, "photos");
@@ -42,16 +56,28 @@ async function exportPhotos() {
 
   const files = await listFiles(src, [".jpg", ".jpeg"]);
   for (const file of files) {
-    const name = `${path.parse(file).name.toLowerCase().replace(/_/g, "-")}.jpg`;
-    // rotate() applies the EXIF orientation; sharp drops the rest of the
-    // metadata (camera, GPS) unless asked to keep it.
-    await sharp(path.join(src, file))
-      .rotate()
-      .resize(PHOTO_MAX_PX, PHOTO_MAX_PX, { fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: PHOTO_QUALITY, mozjpeg: true })
-      .toFile(path.join(dest, name));
+    await exportJpeg(path.join(src, file), path.join(dest, `${path.parse(file).name}.jpg`));
   }
   return files.length;
+}
+
+async function exportMerch() {
+  const src = await findEntry(root, "Merch");
+  const dest = path.join(out, "merch");
+  await mkdir(dest, { recursive: true });
+
+  const photos = await listFiles(src, [".jpg", ".jpeg"]);
+  for (const file of photos) {
+    await exportJpeg(path.join(src, file), path.join(dest, `${path.parse(file).name}.jpg`));
+  }
+  const shots = await listFiles(src, [".png"]);
+  for (const file of shots) {
+    await sharp(path.join(src, file))
+      .resize(PRODUCT_MAX_PX, PRODUCT_MAX_PX, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 88, alphaQuality: 100 })
+      .toFile(path.join(dest, `${path.parse(file).name}.webp`));
+  }
+  return photos.length + shots.length;
 }
 
 async function exportQbPoses() {
@@ -147,7 +173,10 @@ async function exportFavicons() {
 }
 
 const photos = await exportPhotos();
+const merch = await exportMerch();
 const poses = await exportQbPoses();
 await exportLogo();
 await exportFavicons();
-console.log(`Exported ${photos} photos, ${poses} QB poses, the logo and favicons`);
+console.log(
+  `Exported ${photos} photos, ${merch} merch images, ${poses} QB poses, the logo and favicons`,
+);

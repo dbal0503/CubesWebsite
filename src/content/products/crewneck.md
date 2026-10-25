@@ -1,9 +1,12 @@
 ---
 name: Building Engineering Crewneck
 order: 2
-# Placeholder until the execs send product photos.
 photos:
-  - ../../assets/qb/qb-12.webp
+  - ../../assets/merch/crewneck_grey.webp
+  - ../../assets/merch/crewneck_blue.webp
+  - ../../assets/merch/all_crewnecks_back.webp
+  - ../../assets/merch/Brown_Hoodie_Green_Crewneck_1.jpg
+  - ../../assets/merch/Brown_Hoodie_Green_Crewneck_2.jpg
 basePrice: 40
 optionGroups:
   - name: Logo
