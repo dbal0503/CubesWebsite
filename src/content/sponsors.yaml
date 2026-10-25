@@ -1,0 +1,11 @@
+# Sponsors. Put logos in src/assets/sponsors/ (SVG or transparent PNG).
+#
+# Fields: id, name, logo (path relative to this file), url,
+#         tier (title | gold | silver | bronze | partner), active, draft
+
+- id: example-sponsor
+  draft: true
+  name: Example Sponsor
+  logo: ../assets/brand/cubes-logo.png
+  url: https://example.com
+  tier: gold

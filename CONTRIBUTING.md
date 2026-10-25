@@ -14,6 +14,25 @@ The site is served from `/CubesWebsite/` until the custom domain exists.
 - Internal links must go through `withBase()` from `src/lib/url.ts`. A bare `href="/sponsors"` breaks on GitHub Pages.
 - Images must be imported from `src/assets/` and rendered with Astro's `<Image>`, which handles the base path automatically.
 
+## Content
+
+All site content lives in `src/content/`. Schemas in `src/lib/content-schemas.ts` check it at build time, so a missing or misspelled field fails the build with a message naming the file and field.
+
+| What | Where | Format |
+|---|---|---|
+| Events | `src/content/events.yaml` | One list item per event. Upcoming vs past is computed in the browser. |
+| Team | `src/content/team.yaml` | One item per exec, sorted by `order`. |
+| Sponsors | `src/content/sponsors.yaml` | One item per sponsor; logos go in `src/assets/sponsors/`. |
+| Merch | `src/content/products/<slug>.md` | Frontmatter for price and options; the body is the description. |
+| FAQ (QB chat) | `src/content/faq/<id>.md` | Frontmatter for question, keywords and sources; the body is the answer. |
+| Links, email, office | `src/data/site.ts` | Set a value to `null` to hide that link everywhere. |
+
+Each file starts with a comment listing its fields; copy an existing entry to add a new one.
+
+- **Drafts:** `draft: true` keeps an entry visible in `pnpm dev` and out of the live site.
+- **FAQ review:** `reviewed: false` marks answers no CUBES exec has checked against the sources yet.
+- **Merch and Zeffy:** Zeffy options can't change prices, so each priced choice maps to a Zeffy item (`zeffyItem`) or add-on (`zeffyAddOn`). The build rejects a product whose selections don't resolve to exactly one Zeffy item.
+
 ## Images
 
 The originals (full-resolution photos and QB poses) live on the **CUBES shared Google Drive**. The repo only stores web-sized masters.

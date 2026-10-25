@@ -1,0 +1,11 @@
+# Exec team, shown in `order`. Photos live in src/assets/photos/
+# (see CONTRIBUTING.md for how to export them from the Drive).
+#
+# Fields: id, name, role, photo (path relative to this file), order, draft
+
+- id: example-president
+  draft: true
+  name: Firstname Lastname
+  role: President
+  photo: ../assets/photos/img-0406.jpg
+  order: 1
