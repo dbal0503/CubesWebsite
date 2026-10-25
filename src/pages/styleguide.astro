@@ -1,0 +1,150 @@
+---
+import CubesMark from "../components/CubesMark.astro";
+import Qb from "../components/Qb.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { QB_POSES, type QbPose } from "../lib/qb";
+
+const COLORS = [
+  ["--maroon", "Primary: headings, links, outlines"],
+  ["--maroon-deep", "Footer, hover"],
+  ["--brick", "Primary buttons (white text only)"],
+  ["--coral", "Secondary accent"],
+  ["--cream", "Page background"],
+  ["--paper", "Cards"],
+  ["--ink", "Body text"],
+  ["--muted", "Secondary text"],
+];
+const poses = Object.keys(QB_POSES) as QbPose[];
+---
+
+<BaseLayout title="Style guide" noindex>
+  <div class="container guide">
+    <h1>Style guide</h1>
+    <p class="eyebrow">Internal reference, not linked from the site</p>
+
+    <h2>Colour</h2>
+    <ul class="swatches">
+      {
+        COLORS.map(([token, use]) => (
+          <li>
+            <span class="swatch" style={`background: var(${token})`} />
+            <code>{token}</code>
+            <span class="use">{use}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Type</h2>
+    <h1>Heading 1 · Montserrat</h1>
+    <h2>Heading 2 · Montserrat</h2>
+    <h3>Heading 3 · Montserrat</h3>
+    <p class="eyebrow">Eyebrow label</p>
+    <p>
+      Body text in Inter. CUBES represents Concordia's undergraduate building engineering students,
+      with events, workshops and industry connections that go beyond the classroom.
+      <a href="#top">Inline link</a>.
+    </p>
+
+    <h2>Buttons</h2>
+    <p class="row">
+      <a class="button button-primary" href="#top">Primary</a>
+      <a class="button button-secondary" href="#top">Secondary</a>
+    </p>
+
+    <h2>Mark</h2>
+    <p class="row marks">
+      <CubesMark class="mark" />
+      <CubesMark class="mark small" />
+    </p>
+
+    <h2>QB poses</h2>
+    <ul class="poses">
+      {
+        poses.map((pose) => (
+          <li>
+            <Qb pose={pose} width={120} />
+            <code>{pose}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .guide {
+    padding-block: var(--space-7);
+  }
+
+  h2 {
+    margin-top: var(--space-7);
+  }
+
+  .swatches,
+  .poses {
+    display: grid;
+    gap: var(--space-4);
+    list-style: none;
+    padding: 0;
+  }
+
+  .swatches {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+
+  .swatches li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .swatch {
+    height: 4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .use {
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .marks {
+    color: var(--maroon);
+  }
+
+  .marks :global(.mark) {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .marks :global(.mark.small) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .poses {
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  }
+
+  .poses li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .poses li:nth-child(n + 27):nth-child(-n + 32) {
+    background: var(--maroon-deep);
+    color: var(--cream);
+  }
+</style>

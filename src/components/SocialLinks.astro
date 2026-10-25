@@ -1,0 +1,83 @@
+---
+import { siFacebook, siInstagram, siTiktok } from "simple-icons";
+import { type SocialKey, site } from "../data/site";
+
+interface Props {
+  class?: string;
+}
+
+const LABELS: Record<SocialKey, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  linkedin: "LinkedIn",
+  tiktok: "TikTok",
+};
+
+// Simple Icons doesn't ship LinkedIn (removed at LinkedIn's request), so it gets a plain badge.
+const PATHS: Partial<Record<SocialKey, string>> = {
+  instagram: siInstagram.path,
+  facebook: siFacebook.path,
+  tiktok: siTiktok.path,
+};
+
+const links = (Object.entries(site.socials) as [SocialKey, string | null][]).filter(
+  (entry): entry is [SocialKey, string] => entry[1] !== null,
+);
+---
+
+<ul class:list={["socials", Astro.props.class]}>
+  {
+    links.map(([key, href]) => (
+      <li>
+        <a href={href} rel="me noopener" target="_blank">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor">
+            {PATHS[key] ? (
+              <path d={PATHS[key]} />
+            ) : (
+              <>
+                <rect width="24" height="24" rx="4" />
+                <text
+                  x="12"
+                  y="17.5"
+                  text-anchor="middle"
+                  font-family="Arial, sans-serif"
+                  font-size="15"
+                  font-weight="700"
+                  fill="var(--cream)"
+                >
+                  in
+                </text>
+              </>
+            )}
+          </svg>
+          <span class="visually-hidden">{`${LABELS[key]} (opens in a new tab)`}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .socials {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    color: inherit;
+    transition: background-color 0.15s;
+  }
+
+  a:hover {
+    color: inherit;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+</style>

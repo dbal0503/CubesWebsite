@@ -1,0 +1,16 @@
+---
+import PageHeader from "../components/PageHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { withBase } from "../lib/url";
+---
+
+<BaseLayout title="Page not found" noindex>
+  <PageHeader
+    eyebrow="404"
+    title="This page got demolished"
+    lead="QB couldn't find what you were looking for. It may have moved, or never been built."
+    pose="wreckingBall"
+  >
+    <a class="button button-primary" href={withBase("/")}>Back to Cubesville</a>
+  </PageHeader>
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import { Image } from "astro:assets";
+import { type QbPose, qbImage } from "../lib/qb";
+
+interface Props {
+  pose: QbPose;
+  /** Rendered width in CSS pixels; height follows the pose's aspect ratio. */
+  width?: number;
+  /** Decorative by default. Pass alt text when QB carries meaning. */
+  alt?: string;
+  class?: string;
+  loading?: "lazy" | "eager";
+}
+
+const { pose, width = 200, alt = "", class: className, loading = "lazy" } = Astro.props;
+---
+
+<Image
+  src={qbImage(pose)}
+  alt={alt}
+  width={width}
+  densities={[1, 2]}
+  class={className}
+  loading={loading}
+/>
