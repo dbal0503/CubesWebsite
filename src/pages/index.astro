@@ -1,7 +1,6 @@
 ---
 import CubesMark from "../components/CubesMark.astro";
 import Qb from "../components/Qb.astro";
-import { NAV } from "../data/nav";
 import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { withBase } from "../lib/url";
@@ -30,21 +29,6 @@ import { withBase } from "../lib/url";
       </div>
       <Qb pose="wave" width={320} alt="QB, the CUBES mascot, waving hello" loading="eager" class="hero-qb" />
     </div>
-  </section>
-
-  <section class="container">
-    <h2 class="visually-hidden">Explore Cubesville</h2>
-    <ul class="tiles">
-      {
-        NAV.map((item) => (
-          <li>
-            <a class="tile" href={withBase(item.href)}>
-              {item.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
   </section>
 </BaseLayout>
 
@@ -87,35 +71,6 @@ import { withBase } from "../lib/url";
   .hero :global(.hero-qb) {
     justify-self: center;
     width: clamp(180px, 28vw, 320px);
-  }
-
-  .tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-    gap: var(--space-3);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .tile {
-    display: flex;
-    align-items: end;
-    min-height: 6rem;
-    padding: var(--space-4);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--paper);
-    box-shadow: var(--shadow);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    text-decoration: none;
-    color: var(--maroon);
-    transition: transform 0.15s;
-  }
-
-  .tile:hover {
-    transform: translateY(-2px);
   }
 
   @media (max-width: 48rem) {
