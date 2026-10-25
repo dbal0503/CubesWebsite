@@ -1,5 +1,6 @@
 import { defineCollection } from "astro:content";
 import { file, glob } from "astro/loaders";
+import { parse as parseYaml } from "yaml";
 import {
   committeeSchema,
   eventSchema,
@@ -9,8 +10,13 @@ import {
   teamSchema,
 } from "./lib/content-schemas";
 
+// The loader hands entries back sorted by id, so record each event's place in
+// the file: events in the same month keep the order they're written in.
+const withPosition = (text: string) =>
+  (parseYaml(text) as Record<string, unknown>[]).map((item, position) => ({ ...item, position }));
+
 const events = defineCollection({
-  loader: file("src/content/events.yaml"),
+  loader: file("src/content/events.yaml", { parser: withPosition }),
   schema: ({ image }) => eventSchema(image),
 });
 

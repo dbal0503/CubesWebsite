@@ -1,9 +1,13 @@
 ---
 import CubesMark from "../components/CubesMark.astro";
+import NextEvent from "../components/NextEvent.astro";
 import Qb from "../components/Qb.astro";
 import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublished } from "../lib/content";
 import { withBase } from "../lib/url";
+
+const events = await getPublished("events");
 ---
 
 <BaseLayout>
@@ -28,6 +32,16 @@ import { withBase } from "../lib/url";
         </div>
       </div>
       <Qb pose="wave" width={320} alt="QB, the CUBES mascot, waving hello" loading="eager" class="hero-qb" />
+    </div>
+  </section>
+
+  <section class="container" aria-labelledby="next-up">
+    <div class="next">
+      <div class="next-head">
+        <h2 id="next-up">Next up at CUBES</h2>
+        <a href={withBase("/events")}>All events →</a>
+      </div>
+      <NextEvent events={events} />
     </div>
   </section>
 </BaseLayout>
@@ -71,6 +85,22 @@ import { withBase } from "../lib/url";
   .hero :global(.hero-qb) {
     justify-self: center;
     width: clamp(180px, 28vw, 320px);
+  }
+
+  .next {
+    max-width: 40rem;
+  }
+
+  .next-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .next-head h2 {
+    font-size: var(--step-2);
   }
 
   @media (max-width: 48rem) {
