@@ -40,8 +40,6 @@ pnpm dev           # http://localhost:4321/CubesWebsite/
 - The site also rebuilds daily, which keeps build-time data such as the Instagram feed fresh.
 - Pull requests run lint, type-check, tests, and build (`.github/workflows/ci.yml`).
 
-One-time setup: in repo **Settings → Pages**, set **Source** to **GitHub Actions**.
-
 ## Images
 
 The original photos and QB artwork live on the CUBES shared Google Drive and are not committed. The repo holds only web-sized copies in `src/assets/`. See [CONTRIBUTING.md](CONTRIBUTING.md#images).

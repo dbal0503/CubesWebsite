@@ -1,0 +1,37 @@
+---
+import { getImage } from "astro:assets";
+import { site } from "../data/site";
+import { getPublished } from "../lib/content";
+import { toTimedEvent } from "../lib/event-entries";
+import { serializeEvent } from "../lib/events";
+import { qbImage } from "../lib/qb";
+import { withBase } from "../lib/url";
+import QbChat, { type ChatFaq } from "./QbChat";
+
+const faqs: ChatFaq[] = (await getPublished("faq"))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    id: entry.id,
+    question: entry.data.question,
+    keywords: entry.data.keywords,
+    suggested: entry.data.suggested,
+    order: entry.data.order,
+    sources: entry.data.sources,
+    dynamic: entry.data.dynamic,
+    html: entry.rendered?.html ?? "",
+  }));
+
+const events = (await getPublished("events")).map((e) => serializeEvent(toTimedEvent(e)));
+const avatar = await getImage({ src: qbImage("wave"), width: 96, format: "webp" });
+const launcher = await getImage({ src: qbImage("peeking"), width: 120, format: "webp" });
+---
+
+<QbChat
+  client:idle
+  faqs={faqs}
+  events={events}
+  eventsUrl={withBase("/events")}
+  contactEmail={site.contactEmail}
+  avatarSrc={avatar.src}
+  launcherSrc={launcher.src}
+/>
