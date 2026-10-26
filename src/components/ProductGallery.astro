@@ -1,0 +1,99 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  photos: ImageMetadata[];
+  name: string;
+}
+
+const { photos, name } = Astro.props;
+---
+
+<div class="gallery" data-gallery>
+  <div class="stage">
+    {
+      photos.map((photo, i) => (
+        <Image
+          src={photo}
+          alt={`${name}, photo ${i + 1} of ${photos.length}`}
+          widths={[400, 700, 1000]}
+          sizes="(max-width: 48rem) 92vw, 36rem"
+          loading={i === 0 ? "eager" : "lazy"}
+          data-slide={i}
+          hidden={i !== 0}
+        />
+      ))
+    }
+  </div>
+  {
+    photos.length > 1 && (
+      <ul class="thumbs" aria-label="Choose a photo">
+        {photos.map((photo, i) => (
+          <li>
+            <button type="button" data-thumb={i} aria-pressed={i === 0 ? "true" : "false"}>
+              <Image src={photo} alt={`Show photo ${i + 1}`} width={96} height={96} fit="cover" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
+
+<script>
+  for (const gallery of document.querySelectorAll<HTMLElement>("[data-gallery]")) {
+    const slides = [...gallery.querySelectorAll<HTMLElement>("[data-slide]")];
+    const thumbs = [...gallery.querySelectorAll<HTMLButtonElement>("[data-thumb]")];
+    for (const thumb of thumbs) {
+      thumb.addEventListener("click", () => {
+        for (const slide of slides) slide.hidden = slide.dataset.slide !== thumb.dataset.thumb;
+        for (const other of thumbs) other.setAttribute("aria-pressed", String(other === thumb));
+      });
+    }
+  }
+</script>
+
+<style>
+  .stage {
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  .stage :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .thumbs button {
+    display: block;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: calc(var(--radius) * 0.6);
+    background: var(--paper);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .thumbs button[aria-pressed="true"] {
+    border-color: var(--maroon);
+  }
+
+  .thumbs :global(img) {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+  }
+</style>

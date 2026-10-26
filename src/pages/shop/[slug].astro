@@ -1,0 +1,94 @@
+---
+import { type CollectionEntry, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import ProductConfigurator from "../../components/ProductConfigurator";
+import ProductGallery from "../../components/ProductGallery.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublished } from "../../lib/content";
+import { zeffyEmbedUrl } from "../../lib/shop";
+import { withBase } from "../../lib/url";
+
+export const getStaticPaths = (async () => {
+  const products = await getPublished("products");
+  return products
+    .filter((p) => p.data.active)
+    .map((product) => ({ params: { slug: product.id }, props: { product } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  product: CollectionEntry<"products">;
+}
+
+const { product } = Astro.props;
+const { name, photos, basePrice, optionGroups, soldOut, zeffy, fulfilment } = product.data;
+const { Content } = await render(product);
+---
+
+<BaseLayout title={name} description={`${name}: CUBES building engineering merch.`}>
+  <div class="container product">
+    <p class="crumb"><a href={withBase("/shop")}>← All merch</a></p>
+    <div class="layout">
+      <ProductGallery photos={photos} name={name} />
+      <div class="details">
+        <h1>{name}</h1>
+        <div class="description"><Content /></div>
+        <ProductConfigurator
+          client:load
+          product={{ name, basePrice, optionGroups, soldOut, zeffy }}
+          embedUrl={zeffyEmbedUrl(zeffy.formUrl)}
+        />
+        <p class="fulfilment"><strong>Pickup:</strong> {fulfilment}</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .product {
+    padding-block: var(--space-5) var(--space-7);
+  }
+
+  .crumb {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--1);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .description {
+    color: var(--muted);
+    margin-bottom: var(--space-5);
+  }
+
+  .fulfilment {
+    margin-top: var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--paper);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 56rem) {
+    .layout > :global(:first-child) {
+      position: sticky;
+      top: 5rem;
+    }
+  }
+
+  @media (max-width: 56rem) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>
