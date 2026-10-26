@@ -1,0 +1,451 @@
+---
+import { Image } from "astro:assets";
+import type { QbPose } from "../lib/qb";
+import { qbImage } from "../lib/qb";
+import CubesMark from "./CubesMark.astro";
+
+// QB at work while Cubesville loads.
+const LOADING_POSES: QbPose[] = [
+  "dance",
+  "carryingCubes",
+  "plank",
+  "shovel",
+  "pickaxe",
+  "wrench",
+  "ladder",
+  "parachute",
+];
+---
+
+<!--
+  Shown on the first page of every visit (see the inline script in BaseLayout's
+  <head>, which decides before first paint). The page the visitor asked for
+  loads underneath, so choosing 2D lands them on it.
+-->
+<div
+  class="chooser"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="chooser-title"
+  data-mode-chooser
+  data-state="choosing"
+>
+  <div class="inner">
+    <div class="qb-stage" aria-hidden="true">
+      {
+        LOADING_POSES.map((pose, i) => (
+          <Image
+            src={qbImage(pose)}
+            alt=""
+            width={220}
+            densities={[1, 2]}
+            loading="eager"
+            class:list={["qb-frame", { "is-active": i === 0 }]}
+            data-frame={i}
+          />
+        ))
+      }
+    </div>
+
+    <div class="choose">
+      <p class="brand"><CubesMark class="mark" /> CUBES</p>
+      <h1 id="chooser-title">Welcome to Cubesville</h1>
+      <p class="lead">How do you want to explore?</p>
+
+      <div class="options">
+        <button type="button" class="option" data-choose="2d">
+          <span class="option-title">Classic site</span>
+          <span class="option-text">Quick to browse, works everywhere.</span>
+          <span class="option-cta">Enter in 2D →</span>
+        </button>
+
+        <div class="option option-soon" aria-disabled="true">
+          <Image src={qbImage("menAtWork")} alt="" width={110} densities={[1, 2]} class="soon-qb" />
+          <span class="option-title">Cubesville in 3D</span>
+          <span class="option-text">A city to explore, with QB as your guide.</span>
+          <span class="option-cta">Coming soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading" aria-live="polite">
+      <p class="loading-text">Building Cubesville…</p>
+      <div
+        class="bar"
+        role="progressbar"
+        aria-label="Loading"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        data-progress
+      >
+        <span class="bar-fill"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MODE_KEY = "cubes-mode";
+  const FRAME_MS = 650;
+  const MIN_LOADING_MS = 900;
+  // Never keep a visitor waiting on a slow image.
+  const MAX_LOADING_MS = 4000;
+
+  const root = document.documentElement;
+  const chooser = document.querySelector<HTMLElement>("[data-mode-chooser]");
+
+  if (chooser && root.dataset.chooser === "open") {
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const frames = [...chooser.querySelectorAll<HTMLElement>("[data-frame]")];
+    const bar = chooser.querySelector<HTMLElement>("[data-progress]");
+    const behind = [...document.body.children].filter((el) => el !== chooser);
+
+    // Keep keyboard and screen-reader users inside the chooser.
+    for (const el of behind) el.setAttribute("inert", "");
+    chooser.querySelector<HTMLButtonElement>("[data-choose]")?.focus();
+
+    let frame = 0;
+    const cycle = reducedMotion
+      ? undefined
+      : setInterval(() => {
+          frame = (frame + 1) % frames.length;
+          frames.forEach((el, i) => {
+            el.classList.toggle("is-active", i === frame);
+          });
+        }, FRAME_MS);
+
+    const setProgress = (fraction: number) => {
+      const percent = Math.round(Math.min(1, fraction) * 100);
+      bar?.style.setProperty("--progress", `${percent}%`);
+      bar?.setAttribute("aria-valuenow", String(percent));
+    };
+
+    // Real progress: the page's above-the-fold images and its fonts. Lazy
+    // images don't load until scrolled into view, which can't happen yet.
+    const pageLoaded = () => {
+      const images = [...document.images].filter(
+        (img) => !chooser.contains(img) && img.loading !== "lazy",
+      );
+      const done = images.filter((img) => img.complete).length;
+      return (done + (document.fonts.status === "loaded" ? 1 : 0)) / (images.length + 1);
+    };
+
+    const enter = (mode: string) => {
+      try {
+        sessionStorage.setItem(MODE_KEY, mode);
+      } catch {
+        // Storage blocked: the chooser just won't remember the choice.
+      }
+      root.dataset.mode = mode;
+      chooser.dataset.state = "loading";
+
+      const started = performance.now();
+      const tick = () => {
+        const elapsed = performance.now() - started;
+        const loaded = pageLoaded();
+        // Never let the bar run ahead of the page, nor finish before the minimum.
+        setProgress(Math.min(loaded, elapsed / MIN_LOADING_MS));
+        if ((loaded >= 1 && elapsed >= MIN_LOADING_MS) || elapsed >= MAX_LOADING_MS) finish();
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const finish = () => {
+      clearInterval(cycle);
+      chooser.dataset.state = "leaving";
+      for (const el of behind) el.removeAttribute("inert");
+      const close = () => {
+        delete root.dataset.chooser;
+        document.getElementById("main")?.focus({ preventScroll: true });
+      };
+      if (reducedMotion) return close();
+      // QB's hops fire animationend too; wait for the chooser's own fade.
+      const onEnd = (event: AnimationEvent) => {
+        if (event.target !== chooser) return;
+        chooser.removeEventListener("animationend", onEnd);
+        close();
+      };
+      chooser.addEventListener("animationend", onEnd);
+    };
+
+    for (const button of chooser.querySelectorAll<HTMLButtonElement>("[data-choose]")) {
+      button.addEventListener("click", () => enter(button.dataset.choose ?? "2d"));
+    }
+  }
+</script>
+
+<style>
+  .chooser {
+    display: none;
+  }
+
+  :global(html[data-chooser="open"]) {
+    overflow: hidden;
+  }
+
+  :global(html[data-chooser="open"]) .chooser {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: var(--space-4);
+    overflow-y: auto;
+    background:
+      radial-gradient(circle at 15% 20%, var(--paper), transparent 55%),
+      var(--cream);
+    color: var(--ink);
+  }
+
+  .chooser[data-state="leaving"] {
+    animation: fade-out 0.35s ease forwards;
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 34rem);
+    align-items: center;
+    gap: var(--space-7);
+    max-width: 60rem;
+  }
+
+  /* QB's pose cycle: frames stacked, one visible at a time. */
+  .qb-stage {
+    display: grid;
+    width: clamp(140px, 22vw, 220px);
+  }
+
+  .qb-stage :global(.qb-frame) {
+    grid-area: 1 / 1;
+    align-self: end;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+  }
+
+  .qb-stage :global(.qb-frame.is-active) {
+    opacity: 1;
+  }
+
+  .qb-stage :global(.qb-frame.is-active) {
+    animation: hop 0.65s ease-out;
+  }
+
+  @keyframes hop {
+    0% {
+      transform: translateY(0) scale(1, 1);
+    }
+    25% {
+      transform: translateY(-10%) scale(0.97, 1.04);
+    }
+    55% {
+      transform: translateY(0) scale(1.04, 0.96);
+    }
+    100% {
+      transform: translateY(0) scale(1, 1);
+    }
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .brand :global(.mark) {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .brand {
+    color: var(--maroon);
+  }
+
+  h1 {
+    margin-bottom: var(--space-2);
+  }
+
+  .lead {
+    margin-bottom: var(--space-5);
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .option {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    min-height: 11rem;
+    padding: var(--space-5);
+    border: 2px solid var(--maroon);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+  }
+
+  button.option {
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s,
+      transform 0.15s;
+  }
+
+  button.option:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  button.option:focus-visible {
+    outline: 3px solid var(--brick);
+    outline-offset: 3px;
+  }
+
+  .option-title {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+
+  .option-title {
+    color: var(--maroon);
+  }
+
+  .option-text {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .option-cta {
+    align-self: end;
+    margin-top: var(--space-3);
+    font-family: var(--font-heading);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .option-soon .option-cta {
+    justify-self: start;
+    padding: 0.15em 0.7em;
+    border-radius: var(--radius-pill);
+    background: var(--cream);
+    color: var(--maroon-deep);
+  }
+
+  button.option .option-cta {
+    color: var(--maroon);
+  }
+
+  /* Under construction: dark, so the cream "Men at work" QB stands out. */
+  .option-soon {
+    padding-right: 5.5rem;
+    border-color: var(--maroon-deep);
+    background: var(--maroon-deep);
+    overflow: hidden;
+  }
+
+  .option-soon .option-title,
+  .option-soon .option-text {
+    color: var(--cream);
+  }
+
+
+  .option-soon :global(.soon-qb) {
+    position: absolute;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    width: 5.5rem;
+    height: auto;
+    opacity: 0.9;
+  }
+
+  .loading {
+    display: none;
+    grid-column: 2;
+  }
+
+  .chooser[data-state="loading"] .choose,
+  .chooser[data-state="leaving"] .choose {
+    display: none;
+  }
+
+  .chooser[data-state="loading"] .loading,
+  .chooser[data-state="leaving"] .loading {
+    display: block;
+  }
+
+  .loading-text {
+    font-family: var(--font-heading);
+    font-size: var(--step-2);
+    font-weight: 700;
+    color: var(--maroon);
+  }
+
+  .bar {
+    height: 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    display: block;
+    width: var(--progress, 0%);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--maroon);
+    transition: width 0.15s linear;
+  }
+
+  @media (max-width: 44rem) {
+    .inner {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: var(--space-4);
+      text-align: center;
+    }
+
+    .brand {
+      justify-content: center;
+    }
+
+    .options {
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
+
+    .option {
+      min-height: 0;
+      text-align: left;
+    }
+
+    .loading {
+      grid-column: 1;
+      width: 100%;
+    }
+  }
+</style>

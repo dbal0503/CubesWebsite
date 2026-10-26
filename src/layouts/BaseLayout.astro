@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import "../styles/global.css";
+import Chooser from "../components/Chooser.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import QbChatIsland from "../components/QbChatIsland.astro";
@@ -24,6 +25,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // First page of a visit: show the 2D/3D chooser (Chooser.astro). Runs
+      // before first paint so later pages never flash it. If storage is
+      // blocked the choice can't be remembered, so skip the chooser.
+      try {
+        const mode = sessionStorage.getItem("cubes-mode");
+        if (mode) document.documentElement.dataset.mode = mode;
+        else document.documentElement.dataset.chooser = "open";
+      } catch {}
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -43,6 +54,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Font cssVariable="--font-body" preload />
   </head>
   <body>
+    <Chooser />
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
     <main id="main" tabindex="-1">

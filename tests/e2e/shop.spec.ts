@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
 import { site } from "../../src/data/site";
+import { expect, type Page, test } from "./fixtures";
 
 test.describe("closed shop", () => {
   test.skip(site.merch.shopOpen, "the shop is open");
