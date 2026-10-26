@@ -96,8 +96,11 @@ const choiceSchema = z.object({
 });
 
 const optionGroupSchema = z.object({
+  /** Shown to buyers and repeated in the Zeffy summary, so match Zeffy's wording. */
   name: z.string().min(1),
   required: z.boolean().default(true),
+  /** Start with the first choice picked. Turn off where a default would be a guess (size, colour). */
+  preselect: z.boolean().default(true),
   choices: z.array(choiceSchema).min(1),
 });
 

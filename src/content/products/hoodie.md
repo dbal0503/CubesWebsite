@@ -16,13 +16,15 @@ optionGroups:
       - label: Big logo
         priceDelta: 5
         zeffyItem: Hoodie - Big Logo
-  - name: Back design
+  - name: Back Design
     choices:
-      - label: No back design
-      - label: With back design
+      - label: No Back Design
+      - label: With Back Design
   - name: Size
+    preselect: false
     choices: [{ label: XS }, { label: S }, { label: M }, { label: L }, { label: XL }, { label: 2XL }, { label: 3XL }]
   - name: Color
+    preselect: false
     choices:
       - { label: Black, swatch: "#1c1b1b" }
       - { label: Navy Blue, swatch: "#1f2a44" }

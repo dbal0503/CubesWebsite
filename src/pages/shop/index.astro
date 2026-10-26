@@ -1,0 +1,103 @@
+---
+import { Image } from "astro:assets";
+import PageHeader from "../../components/PageHeader.astro";
+import { site } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublished } from "../../lib/content";
+import { formatPrice, fromPrice } from "../../lib/shop";
+import { withBase } from "../../lib/url";
+
+const products = (await getPublished("products"))
+  .filter((p) => p.data.active)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const optionSummary = (groups: { name: string; choices: unknown[] }[]) =>
+  groups
+    .filter((g) => ["Color", "Size"].includes(g.name))
+    .map((g) => (g.name === "Color" ? `${g.choices.length} colours` : `${g.choices.length} sizes`))
+    .join(" · ");
+---
+
+<BaseLayout
+  title="Shop"
+  description="CUBES building engineering hoodies and crewnecks. Pick up at MU403."
+>
+  <PageHeader
+    eyebrow="Merch"
+    title="Wear the build"
+    lead={`Building engineering hoodies and crewnecks, designed by CUBES. Order online and pick up at ${site.office}.`}
+    pose="hoodie"
+  />
+
+  <section class="container" aria-label="Products">
+    <ul class="products">
+      {
+        products.map((product) => (
+          <li>
+            <a class="card" href={withBase(`/shop/${product.id}`)}>
+              <Image
+                src={product.data.photos[0]}
+                alt=""
+                widths={[400, 700]}
+                sizes="(max-width: 40rem) 92vw, 22rem"
+              />
+              <span class="name">{product.data.name}</span>
+              <span class="meta">
+                From {formatPrice(fromPrice(product.data))} · {optionSummary(product.data.optionGroups)}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    text-decoration: none;
+    color: var(--ink);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .card :global(img) {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    margin-bottom: var(--space-3);
+  }
+
+  .name {
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: 700;
+    color: var(--maroon);
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+</style>
