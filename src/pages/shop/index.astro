@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import PageHeader from "../../components/PageHeader.astro";
+import UnderConstruction from "../../components/UnderConstruction.astro";
 import { site } from "../../data/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPublished } from "../../lib/content";
@@ -22,13 +23,27 @@ const optionSummary = (groups: { name: string; choices: unknown[] }[]) =>
   title="Shop"
   description="CUBES building engineering hoodies and crewnecks. Pick up at MU403."
 >
+  {
+    !site.merch.shopOpen && (
+      <UnderConstruction title="Merch Shop" pose="hoodie">
+        <a class="button button-primary" href={site.merch.zeffyUrl} rel="noopener" target="_blank">
+          Order merch on Zeffy
+        </a>
+      </UnderConstruction>
+    )
+  }
+  {
+    site.merch.shopOpen && (
   <PageHeader
     eyebrow="Merch"
     title="Wear the build"
     lead={`Building engineering hoodies and crewnecks, designed by CUBES. Order online and pick up at ${site.office}.`}
     pose="hoodie"
   />
+    )
+  }
 
+  {site.merch.shopOpen && (
   <section class="container" aria-label="Products">
     <ul class="products">
       {
@@ -51,6 +66,7 @@ const optionSummary = (groups: { name: string; choices: unknown[] }[]) =>
       }
     </ul>
   </section>
+  )}
 </BaseLayout>
 
 <style>

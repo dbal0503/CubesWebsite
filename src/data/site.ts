@@ -17,6 +17,8 @@ export const site = {
   signupUrl: null as string | null,
   contactEmail: "president.cubes@ecaconcordia.ca",
   merch: {
+    /** Off: /shop shows "under construction" with a link to Zeffy, and no product pages are built. */
+    shopOpen: false,
     zeffyUrl:
       "https://www.zeffy.com/en-CA/ticketing/cubes-building-engineering-student-merch-fall--2026",
     pickup: "2170 Bishop St., Suite 403, Montreal, QC H3G 2E9",
