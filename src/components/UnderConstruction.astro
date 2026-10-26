@@ -17,7 +17,13 @@ const { title, pose } = Astro.props;
   lead="QB and the crew are still building this part of Cubesville."
   pose={pose}
 >
-  <a class="button button-secondary" href={site.socials.instagram} rel="noopener" target="_blank">
-    Follow along on Instagram
-  </a>
+  {
+    Astro.slots.has("default") ? (
+      <slot />
+    ) : (
+      <a class="button button-secondary" href={site.socials.instagram} rel="noopener" target="_blank">
+        Follow along on Instagram
+      </a>
+    )
+  }
 </PageHeader>

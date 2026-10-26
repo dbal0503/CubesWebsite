@@ -1,5 +1,23 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { site } from "../../src/data/site";
+
+test.describe("closed shop", () => {
+  test.skip(site.merch.shopOpen, "the shop is open");
+
+  test("shows under construction with a link to the Zeffy store", async ({ page, request }) => {
+    await page.goto("shop");
+    await expect(page.getByText("Under construction")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Order merch on Zeffy" })).toHaveAttribute(
+      "href",
+      site.merch.zeffyUrl,
+    );
+    expect((await request.get("shop/hoodie")).status()).toBe(404);
+  });
+});
+
+// Everything below covers the open shop (site.merch.shopOpen).
+test.skip(!site.merch.shopOpen, "the shop is closed (site.merch.shopOpen is false)");
 
 // Never hit Zeffy from tests: its bot protection blocks headless browsers anyway.
 test.beforeEach(async ({ page }) => {

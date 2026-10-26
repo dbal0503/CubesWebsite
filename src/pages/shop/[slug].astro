@@ -3,12 +3,14 @@ import { type CollectionEntry, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import ProductConfigurator from "../../components/ProductConfigurator";
 import ProductGallery from "../../components/ProductGallery.astro";
+import { site } from "../../data/site";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPublished } from "../../lib/content";
 import { zeffyEmbedUrl } from "../../lib/shop";
 import { withBase } from "../../lib/url";
 
 export const getStaticPaths = (async () => {
+  if (!site.merch.shopOpen) return [];
   const products = await getPublished("products");
   return products
     .filter((p) => p.data.active)
