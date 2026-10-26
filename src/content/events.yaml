@@ -1,12 +1,14 @@
 # CUBES events for the 2026–27 year.
 #
-# Each event has either an exact `start` (with Montreal offset, e.g.
-# 2026-12-05T18:00:00-05:00) or just a `month` ("2026-12") while the date is
-# still open. Swap `month` for `start` once a date is confirmed.
+# Each event has exactly one of:
+#   start: 2026-12-05T18:00:00-05:00   date and time (Montreal offset), optional `end`
+#   date: "2026-12-05"                 day without a time yet, optional `endDate`
+#   month: "2026-12"                   only the month so far ("Date TBA")
+# Make it more precise as plans firm up.
 # `tentative: true` marks events that might not happen (the "?" items).
 # Upcoming vs past is computed in the visitor's browser.
 #
-# Fields: id, title, start | month, end (optional), tentative, location (optional),
+# Fields: id, title, start | date | month, end / endDate (optional), tentative, location (optional),
 #         description (optional), image (optional, path relative to this file),
 #         rsvpUrl (optional), draft
 
@@ -30,7 +32,7 @@
   description: Hands-on tutorial on AutoCAD and Revit.
 - id: wine-and-cheese-fall-2026
   title: Wine & Cheese
-  month: "2026-10"
+  date: "2026-10-22"
 - id: open-house-fall-2026
   title: Open House
   month: "2026-10"
@@ -40,11 +42,19 @@
   tentative: true
 
 # November 2026
-- id: asp-course-part-1-2026
-  title: ASP Course, Part 1
-  month: "2026-11"
-  tentative: true
-  description: Health and safety on the construction site (ASP Construction), with part of the fee covered by CUBES.
+- id: asp-certification-weekend-1-2026
+  title: ASP Certification, Weekend 1
+  date: "2026-11-07"
+  endDate: "2026-11-08"
+  description: Health and safety on the construction site (ASP Construction), with part of the fee covered by CUBES. The course runs over two weekends.
+- id: asp-certification-weekend-2-2026
+  title: ASP Certification, Weekend 2
+  date: "2026-11-14"
+  endDate: "2026-11-15"
+  description: Second weekend of the ASP Construction certification.
+- id: cubesmas-2026
+  title: Cubesmas
+  date: "2026-11-27"
 - id: workshop-fall-2026
   title: Workshop
   month: "2026-11"
@@ -58,10 +68,7 @@
 # December 2026
 - id: gingerbread-competition-2026
   title: Gingerbread Competition
-  month: "2026-12"
-- id: cubesmas-2026
-  title: Cubesmas
-  month: "2026-12"
+  month: "2026-12" # maybe Dec 2
 - id: exam-tutorials-fall-2026
   title: Exam Tutorials
   month: "2026-12"
@@ -78,16 +85,12 @@
 # February 2027
 - id: wine-and-cheese-winter-2027
   title: Wine & Cheese
-  month: "2027-02"
+  date: "2027-02-03"
 - id: open-house-winter-2027
   title: Open House
   month: "2027-02"
 - id: valentines-lizard-lounge-2027
   title: Valentine's Lizard Lounge
-  month: "2027-02"
-  tentative: true
-- id: revit-competition-2027
-  title: Revit Competition
   month: "2027-02"
   tentative: true
 
@@ -99,6 +102,10 @@
 - id: engweek-2027
   title: Engineering Week
   month: "2027-03"
+- id: revit-competition-2027
+  title: Revit Competition
+  month: "2027-03" # maybe Mar 20
+  tentative: true
 - id: site-tour-winter-2027
   title: Site Tour
   month: "2027-03"

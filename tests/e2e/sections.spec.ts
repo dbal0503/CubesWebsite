@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 // Rule-based checks, so they keep passing as events.yaml changes.
@@ -34,6 +35,17 @@ test.describe("events page with the clock at Nov 5, 2026", () => {
     await expect(nextCard).toBeVisible();
     await expect(nextCard).not.toHaveAttribute("data-past");
   });
+});
+
+test("past event cards keep AA contrast", async ({ page }) => {
+  // Mid-November: some November events are past while the month is still upcoming.
+  await page.clock.setFixedTime(new Date("2026-11-10T12:00:00-05:00"));
+  await page.goto("events");
+  await page.locator("[data-past-months] summary").click();
+  expect(await page.locator("[data-past]").count()).toBeGreaterThan(0);
+
+  const results = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
+  expect(results.violations.map((v) => v.id)).toEqual([]);
 });
 
 test("home page shows the same next event as the events page", async ({ page }) => {

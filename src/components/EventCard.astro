@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { toTimedEvent } from "../lib/event-entries";
 import { formatWhen } from "../lib/events";
 
 interface Props {
@@ -10,13 +11,15 @@ interface Props {
 }
 
 const { event, headingLevel = 3, underMonthHeading = false } = Astro.props;
-const { title, start, end, month, tentative, location, description, rsvpUrl } = event.data;
+const { title, start, month, date, tentative, location, description, rsvpUrl } = event.data;
 const Heading = `h${headingLevel}` as "h2" | "h3";
 ---
 
 <article class="event-card" data-event-id={event.id}>
   <p class="when">
-    <time datetime={start?.toISOString() ?? month}>{formatWhen({ id: event.id, title, start, end, month }, { withMonth: !underMonthHeading })}</time>
+    <time datetime={start?.toISOString() ?? date ?? month}>
+      {formatWhen(toTimedEvent(event), { withMonth: !underMonthHeading })}
+    </time>
     {tentative && <span class="badge">Tentative</span>}
     <span class="badge past-badge">Past</span>
   </p>
@@ -88,9 +91,14 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
     margin-top: var(--space-2);
   }
 
+  /* Muted without opacity, which would drop the text below AA contrast. */
   :global([data-past]) > .event-card {
     border-left-color: var(--line);
-    opacity: 0.75;
+    background: transparent;
+  }
+
+  :global([data-past]) > .event-card .title {
+    color: var(--muted);
   }
 
   :global([data-past]) > .event-card .past-badge {

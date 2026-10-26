@@ -116,6 +116,17 @@ describe("eventSchema", () => {
     expect(issues(event.safeParse({ ...base, month: "2026-11" }))).toMatch(/exactly one of start/);
   });
 
+  it("accepts a day-only event with an end date", () => {
+    const asp = { title: "ASP", date: "2026-11-07", endDate: "2026-11-08" };
+    expect(issues(event.safeParse(asp))).toBe("");
+    expect(issues(event.safeParse({ ...asp, endDate: "2026-11-06" }))).toMatch(
+      /endDate needs a date, and must be on or after it/,
+    );
+    expect(issues(event.safeParse({ title: "ASP", date: "2026-11-7" }))).toMatch(
+      /dates must look like/,
+    );
+  });
+
   it("rejects malformed months", () => {
     expect(issues(event.safeParse({ title: "Cubesmas", month: "2026-13" }))).toMatch(
       /month must look like/,
