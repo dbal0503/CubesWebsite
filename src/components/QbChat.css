@@ -1,0 +1,232 @@
+.qb-chat {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.qb-launcher {
+  display: grid;
+  place-items: end center;
+  width: 4rem;
+  height: 4rem;
+  padding: 0;
+  border: 3px solid var(--cream);
+  border-radius: 50%;
+  background: var(--maroon);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.qb-launcher:hover {
+  transform: translateY(-2px);
+}
+
+.qb-launcher img {
+  width: 3.4rem;
+  height: auto;
+}
+
+.qb-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(23rem, calc(100vw - 2 * var(--space-4)));
+  height: min(34rem, calc(100dvh - 7rem));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream);
+  box-shadow: 0 10px 40px rgb(42 22 20 / 0.25);
+  overflow: hidden;
+}
+
+.qb-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--maroon);
+  color: var(--cream);
+}
+
+.qb-head img {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--cream);
+  object-fit: contain;
+}
+
+.qb-head p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.qb-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.qb-role {
+  font-size: var(--step--1);
+  opacity: 0.85;
+}
+
+.qb-close {
+  margin-left: auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cream);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qb-close:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.qb-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  overflow-y: auto;
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.qb-msg {
+  max-width: 88%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+}
+
+.qb-bot {
+  align-self: flex-start;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 0.2rem;
+}
+
+.qb-bot p,
+.qb-answer :where(p, ul, ol) {
+  margin: 0 0 var(--space-2);
+}
+
+.qb-bot > :last-child,
+.qb-answer > :last-child {
+  margin-bottom: 0;
+}
+
+.qb-answer ul,
+.qb-answer ol {
+  padding-left: 1.2em;
+}
+
+.qb-user {
+  align-self: flex-end;
+  background: var(--maroon);
+  color: var(--cream);
+  border-bottom-right-radius: 0.2rem;
+}
+
+.qb-sources {
+  color: var(--muted);
+}
+
+.qb-chips,
+.qb-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.qb-chips {
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.qb-chip {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--maroon);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--maroon);
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.qb-chip:hover {
+  background: var(--maroon);
+  color: var(--cream);
+}
+
+.qb-form {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.qb-form input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.qb-send {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brick);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.qb-send:hover {
+  background: var(--brick-hover);
+}
+
+@media (max-width: 30rem) {
+  .qb-chat {
+    right: var(--space-3);
+    bottom: var(--space-3);
+  }
+
+  .qb-panel {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    height: min(85dvh, 40rem);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  /* The full-width panel covers the launcher; its own close button takes over. */
+  .qb-panel + .qb-launcher {
+    display: none;
+  }
+}

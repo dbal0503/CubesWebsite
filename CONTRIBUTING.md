@@ -32,6 +32,7 @@ Each file starts with a comment listing its fields; copy an existing entry to ad
 
 - **Drafts:** `draft: true` keeps an entry visible in `pnpm dev` and out of the live site.
 - **FAQ review:** `reviewed: false` marks answers no CUBES exec has checked against the sources yet.
+- **QB chat:** QB matches typed questions to FAQ entries by their `keywords` (worth more) and the words in `question`, with no AI. Questions naming an event ("when's cubesmas?") get that event's date. When adding or editing an FAQ, add a few real phrasings to the table in `src/lib/faq-match.test.ts`; it runs against the real content, so a keyword change that breaks a common question fails the tests.
 - **Merch and Zeffy:** Zeffy options can't change prices, so each priced choice maps to a Zeffy item (`zeffyItem`) or add-on (`zeffyAddOn`). The build rejects a product whose selections don't resolve to exactly one Zeffy item.
 
 ## Images
