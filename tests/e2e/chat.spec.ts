@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page, test } from "./fixtures";
 
 // The chat hydrates when the browser is idle; wait for the live component.
 const chatReady = (page: Page) =>

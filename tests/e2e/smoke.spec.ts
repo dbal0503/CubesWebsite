@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("home page renders with images served under the base path", async ({ page }) => {
   await page.goto("./");
