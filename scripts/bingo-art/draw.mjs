@@ -3,6 +3,24 @@
 
 export const INK = "#782020";
 
+// Christmas colours for accessories and word pictures, used alongside the ink.
+export const RED = "#d43828";
+export const GREEN = "#2f7a4f";
+export const PINE = "#1e4a37";
+export const WHITE = "#fffdf7";
+export const GOLD = "#e8b23a";
+export const GOLD_DARK = "#b9862a";
+export const BLUE = "#3f8fd2";
+export const BROWN = "#a8703e";
+export const COOKIE = "#c98a4b";
+export const COAL = "#3b3534";
+export const ORANGE = "#e8792b";
+export const PINK = "#f2a7b8";
+export const STEEL = "#8fa6b8";
+export const SNOW = "#c9dcec";
+export const SNOW_SHADE = "#a3c1da";
+export const CREAM = "#ecd39a";
+
 /** Width of a cut line, matching the gaps in QB's line art. */
 export const CW = 13;
 
@@ -25,9 +43,14 @@ export function star(cx, cy, r, inner = 0.45) {
 export const polygon = (pts) =>
   `<polygon points="${pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}"/>`;
 
-/** A star with facet lines from its centre to each inner corner. */
-export function facetedStar(cx, cy, r) {
-  const pts = star(cx, cy, r, 0.48);
+/** A star with facet lines from its centre to each inner corner, turned `rotate` degrees. */
+export function facetedStar(cx, cy, r, rotate = 0) {
+  const pts = star(cx, cy, r, 0.48).map(([x, y]) => {
+    const a = (rotate * Math.PI) / 180;
+    const dx = x - cx;
+    const dy = y - cy;
+    return [cx + dx * Math.cos(a) - dy * Math.sin(a), cy + dx * Math.sin(a) + dy * Math.cos(a)];
+  });
   return {
     art: `${polygon(pts)}${polygon(pts).replace("/>", ` fill="none" stroke="currentColor" stroke-width="${r * 0.12}"/>`)}`,
     cuts: pts

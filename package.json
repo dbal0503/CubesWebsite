@@ -16,6 +16,7 @@
     "lint:fix": "biome check --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "storybook": "storybook dev -p 6006 --no-open",
     "export-masters": "node scripts/export-masters.mjs"
   },
   "dependencies": {
@@ -29,9 +30,11 @@
     "@axe-core/playwright": "4.13.0",
     "@biomejs/biome": "2.5.15",
     "@playwright/test": "1.64.1",
+    "@storybook/preact-vite": "10.6.9",
     "@types/node": "24.19.2",
     "sharp": "0.35.5",
     "simple-icons": "16.33.0",
+    "storybook": "10.6.9",
     "typescript": "6.0.3",
     "vitest": "5.0.5"
   }

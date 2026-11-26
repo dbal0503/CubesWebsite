@@ -49,6 +49,8 @@ export default function BingoHost({ images, idleImage, backUrl }: Props) {
   const [checkNumber, setCheckNumber] = useState("");
   const [checked, setChecked] = useState<number | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Set once the keyboard shortcuts are listening (tests wait for it).
+  const [ready, setReady] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -135,6 +137,7 @@ export default function BingoHost({ images, idleImage, backUrl }: Props) {
       else if (e.key === "f" || e.key === "F") a.toggleFullscreen();
     };
     window.addEventListener("keydown", onKey);
+    setReady(true);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
@@ -163,7 +166,7 @@ export default function BingoHost({ images, idleImage, backUrl }: Props) {
   const art = shown ? images[shown.id as CallId] : idleImage;
 
   return (
-    <div class="bh" ref={rootRef}>
+    <div class="bh" ref={rootRef} data-ready={ready || undefined}>
       <header class="bh-top">
         <p class="bh-title">
           Cubesmas Bingo <span>with Cubie</span>
