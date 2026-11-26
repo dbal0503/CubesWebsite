@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 4321;
+// Not 4321: that's `astro dev`, whose toolbar and dev-only markup would skew the tests.
+const PORT = 4329;
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -18,7 +19,8 @@ export default defineConfig({
     // preview server is running, which a crashed test run can leave behind.
     command: `pnpm build && pnpm preview --port ${PORT} --ignore-lock`,
     url: `http://localhost:${PORT}/CubesWebsite/`,
-    reuseExistingServer: !process.env.CI,
+    // Always test a fresh production build.
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

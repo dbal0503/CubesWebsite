@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 // Rule-based checks, so they keep passing as events.yaml changes.
 test.describe("events page with the clock at Nov 5, 2026", () => {

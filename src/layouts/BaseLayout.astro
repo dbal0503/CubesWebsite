@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import "../styles/global.css";
+import Chooser from "../components/Chooser.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import QbChatIsland from "../components/QbChatIsland.astro";
@@ -12,7 +13,7 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
-  /** Page only: no header, footer or chat, for full-screen pages like the bingo caller. */
+  /** Page only: no header, footer, chat or 2D/3D chooser, for full-screen pages like the bingo caller. */
   bare?: boolean;
 }
 
@@ -22,10 +23,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-mode="2d">
+<html lang="en" data-mode="2d" data-bare={bare || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // First page of a visit: show the 2D/3D chooser (Chooser.astro). Runs
+      // before first paint so later pages never flash it. If storage is
+      // blocked the choice can't be remembered, so skip the chooser. Bare
+      // pages never show it.
+      try {
+        const root = document.documentElement;
+        const mode = sessionStorage.getItem("cubes-mode");
+        if (mode) root.dataset.mode = mode;
+        else if (!("bare" in root.dataset)) root.dataset.chooser = "open";
+      } catch {}
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -52,6 +65,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </main>
       ) : (
         <>
+          <Chooser />
           <a class="skip-link" href="#main">Skip to content</a>
           <Header />
           <main id="main" tabindex="-1">

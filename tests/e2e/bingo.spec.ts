@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { test as firstVisit } from "@playwright/test";
+import { expect, type Page, test } from "./fixtures";
 
 const CARD_1_ROW_1_IDS = [
   "sleigh",
@@ -85,3 +86,16 @@ test("the caller confirms a real BINGO and plays the song", async ({ page }) => 
   await expect(page.getByRole("dialog")).toContainText("Card #01: BINGO!");
   await expect(page.getByRole("dialog")).toContainText("Row 1");
 });
+
+firstVisit(
+  "the caller opens straight away on a first visit, without the 2D/3D chooser",
+  async ({ page }) => {
+    await page.route(/youtube(-nocookie)?\.com/, (route) => route.abort());
+    await page.goto("bingo/host/");
+    await hydrated(page, ".bh");
+    await expect(page.getByRole("dialog", { name: "Welcome to Cubesville" })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.dataset.chooser)).toBeUndefined();
+    await page.getByRole("button", { name: "Draw first call" }).click();
+    await expect(page.locator(".bh-count")).toContainText("1 of 39");
+  },
+);
