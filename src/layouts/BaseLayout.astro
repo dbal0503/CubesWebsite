@@ -13,26 +13,30 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** Page only: no header, footer, chat or 2D/3D chooser, for full-screen pages like the bingo caller. */
+  bare?: boolean;
 }
 
-const { title, description = site.description, noindex = false } = Astro.props;
+const { title, description = site.description, noindex = false, bare = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.fullName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-mode="2d">
+<html lang="en" data-mode="2d" data-bare={bare || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script is:inline>
       // First page of a visit: show the 2D/3D chooser (Chooser.astro). Runs
       // before first paint so later pages never flash it. If storage is
-      // blocked the choice can't be remembered, so skip the chooser.
+      // blocked the choice can't be remembered, so skip the chooser. Bare
+      // pages never show it.
       try {
+        const root = document.documentElement;
         const mode = sessionStorage.getItem("cubes-mode");
-        if (mode) document.documentElement.dataset.mode = mode;
-        else document.documentElement.dataset.chooser = "open";
+        if (mode) root.dataset.mode = mode;
+        else if (!("bare" in root.dataset)) root.dataset.chooser = "open";
       } catch {}
     </script>
     <title>{fullTitle}</title>
@@ -54,14 +58,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Font cssVariable="--font-body" preload />
   </head>
   <body>
-    <Chooser />
-    <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
-    <main id="main" tabindex="-1">
-      <slot />
-    </main>
-    <Footer />
-    <QbChatIsland />
+    {
+      bare ? (
+        <main id="main">
+          <slot />
+        </main>
+      ) : (
+        <>
+          <Chooser />
+          <a class="skip-link" href="#main">Skip to content</a>
+          <Header />
+          <main id="main" tabindex="-1">
+            <slot />
+          </main>
+          <Footer />
+          <QbChatIsland />
+        </>
+      )
+    }
   </body>
 </html>
 
