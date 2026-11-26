@@ -8,8 +8,13 @@
 // the drawing's own coordinates, for placing shapes.
 //
 // Each picture is a list of layers painted in order. A layer's `art` is
-// painted in QB's ink after a transparent gap is cut around it (like the gaps
-// in QB's line art), then its `cuts` are erased from the result.
+// painted in QB's ink (or its `color`) after a transparent gap is cut around
+// it, like the gaps in QB's line art (`gap: false` joins it to what's below
+// instead). Then its `cuts` are erased from the result. `erase` removes part
+// of the picture before the layer paints. `clip: true` only repaints pixels
+// already there, and `clip: { seed: [x, y] }` only the shape at that point
+// (recolouring one of QB's shapes, up to its gap lines). `behind: true`
+// paints the layer behind what's there, so it can tuck under QB's outline.
 
 import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -47,6 +52,37 @@ async function base(spec) {
     .toBuffer();
 }
 
+const seedAt = ([x, y], pad, scale = 1) => [
+  Math.round(pad.left + x * scale),
+  Math.round(pad.top + y * scale),
+];
+
+/** A mask of the solid shape containing `seed`: a flood fill that stops at QB's gaps. */
+async function connectedShape(img, w, h, [sx, sy]) {
+  const { data } = await sharp(img).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const solid = (i) => data[i * 4 + 3] > 127;
+  const inside = new Uint8Array(w * h);
+  const start = sy * w + sx;
+  if (!solid(start)) throw new Error(`clip seed (${sx}, ${sy}) isn't on a solid pixel`);
+  const stack = [start];
+  inside[start] = 1;
+  while (stack.length) {
+    const i = stack.pop();
+    const x = i % w;
+    for (const n of [i - w, i + w, x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1]) {
+      if (n >= 0 && n < w * h && !inside[n] && solid(n)) {
+        inside[n] = 1;
+        stack.push(n);
+      }
+    }
+  }
+  const mask = Buffer.alloc(w * h * 4);
+  for (let i = 0; i < w * h; i++) mask[i * 4 + 3] = inside[i] ? data[i * 4 + 3] : 0;
+  return sharp(mask, { raw: { width: w, height: h, channels: 4 } })
+    .png()
+    .toBuffer();
+}
+
 async function build(id, spec) {
   const pad = { top: 0, right: 0, bottom: 0, left: 0, ...spec.pad };
   let img = await base({ ...spec, pad });
@@ -54,21 +90,46 @@ async function build(id, spec) {
   const layer = (body, color, scale = spec.scale) =>
     svg(w, h, pad, `<g color="${color}">${body}</g>`, scale);
 
-  for (const { art, cuts } of spec.layers) {
-    const paint = await sharp(layer(art, INK)).png().toBuffer();
-    // The gap: the layer's shape grown by GAP px (blur, then a low threshold).
-    // Separate pipelines: within one, sharp thresholds before it blurs.
-    const blurred = await sharp(paint)
-      .extractChannel(3)
-      .blur(GAP / 1.9)
-      .png()
-      .toBuffer();
-    const grown = await sharp(blurred).threshold(8).png().toBuffer();
-    const gap = await sharp({ create: { width: w, height: h, channels: 3, background: "#000" } })
-      .joinChannel(grown)
-      .png()
-      .toBuffer();
-    const steps = [{ input: gap, blend: "dest-out" }, { input: paint }];
+  for (const {
+    art,
+    cuts,
+    erase,
+    color = INK,
+    gap = true,
+    clip = false,
+    behind = false,
+  } of spec.layers) {
+    if (erase) {
+      img = await sharp(img)
+        .composite([{ input: layer(erase, "#000"), blend: "dest-out" }])
+        .png()
+        .toBuffer();
+    }
+    let paint = await sharp(layer(art, color)).png().toBuffer();
+    if (clip) {
+      const shape =
+        clip === true ? img : await connectedShape(img, w, h, seedAt(clip.seed, pad, spec.scale));
+      paint = await sharp(paint)
+        .composite([{ input: shape, blend: "dest-in" }])
+        .png()
+        .toBuffer();
+    }
+    const steps = [{ input: paint, blend: behind ? "dest-over" : "over" }];
+    if (gap && !clip && !behind) {
+      // The gap: the layer's shape grown by GAP px (blur, then a low threshold).
+      // Separate pipelines: within one, sharp thresholds before it blurs.
+      const blurred = await sharp(paint)
+        .extractChannel(3)
+        .blur(GAP / 1.9)
+        .png()
+        .toBuffer();
+      const grown = await sharp(blurred).threshold(8).png().toBuffer();
+      const mask = await sharp({ create: { width: w, height: h, channels: 3, background: "#000" } })
+        .joinChannel(grown)
+        .png()
+        .toBuffer();
+      steps.unshift({ input: mask, blend: "dest-out" });
+    }
     if (cuts) steps.push({ input: layer(cuts, "#000"), blend: "dest-out" });
     for (const step of steps) img = await sharp(img).composite([step]).png().toBuffer();
   }

@@ -36,7 +36,7 @@ test("the bingo page links the caller and the printable cards", async ({ page, r
 
 test("the caller draws, undoes and checks a card", async ({ page }) => {
   await page.goto("bingo/host/");
-  await hydrated(page, ".bh");
+  await hydrated(page, ".bh[data-ready]");
 
   await page.getByRole("button", { name: "Draw first call" }).click();
   await expect(page.locator(".bh-count")).toContainText("1 of 39");
@@ -55,7 +55,7 @@ test("the caller draws, undoes and checks a card", async ({ page }) => {
 
 test("the caller runs from the keyboard", async ({ page }) => {
   await page.goto("bingo/host/");
-  await hydrated(page, ".bh");
+  await hydrated(page, ".bh[data-ready]");
   await page.locator("body").press("Space");
   await expect(page.locator(".bh-count")).toContainText("1 of 39");
   await page.locator("body").press("ArrowRight");
@@ -69,7 +69,7 @@ test("the caller confirms a real BINGO and plays the song", async ({ page }) => 
     localStorage.setItem("cubes-bingo-host", JSON.stringify(ids));
   }, CARD_1_ROW_1_IDS);
   await page.goto("bingo/host/");
-  await hydrated(page, ".bh");
+  await hydrated(page, ".bh[data-ready]");
 
   await expect(page.locator(".bh-label")).toContainText("Last Christmas");
   await expect(page.locator(".bh-recent")).toContainText("Gingerbread");
@@ -92,7 +92,7 @@ firstVisit(
   async ({ page }) => {
     await page.route(/youtube(-nocookie)?\.com/, (route) => route.abort());
     await page.goto("bingo/host/");
-    await hydrated(page, ".bh");
+    await hydrated(page, ".bh[data-ready]");
     await expect(page.getByRole("dialog", { name: "Welcome to Cubesville" })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.dataset.chooser)).toBeUndefined();
     await page.getByRole("button", { name: "Draw first call" }).click();

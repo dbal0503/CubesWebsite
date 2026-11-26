@@ -1,12 +1,36 @@
-// Pictures for the plain word calls, on a 1000 x 1000 canvas in QB's style.
+// Pictures for the plain word calls, on a 1000 x 1000 canvas in QB's style:
+// flat colours with cut-out details. Layers without a colour use QB's ink.
 // Layers paint in order; see make-bingo-art.mjs.
 
-import { dot, facetedStar, line, polygon, sparkle, star, wave } from "./draw.mjs";
+import {
+  BLUE,
+  BROWN,
+  COAL,
+  COOKIE,
+  CREAM,
+  dot,
+  facetedStar,
+  GOLD,
+  GOLD_DARK,
+  GREEN,
+  line,
+  ORANGE,
+  PINE,
+  PINK,
+  polygon,
+  RED,
+  SNOW,
+  STEEL,
+  sparkle,
+  star,
+  wave,
+} from "./draw.mjs";
 
 const repeat = (n, fn) => Array.from({ length: n }, (_, i) => fn(i)).join("");
 
 /** A round cookie with chocolate chips cut out. */
 const cookie = (cx, cy, r) => ({
+  color: COOKIE,
   art: dot(cx, cy, r),
   cuts:
     [
@@ -28,20 +52,24 @@ export const WORDS = {
   sleigh: [
     // Gifts riding in the back, then the sleigh, then its runner.
     {
+      color: BROWN,
       art: `<path d="M330,520 C300,420 350,340 430,305 L420,260 L520,260 L505,305 C590,340 630,430 610,520 Z"/>`,
       cuts: line("M425,300 Q470,318 510,300") + line("M400,400 Q420,460 470,500"),
     },
     {
+      color: GREEN,
       art: `<rect x="600" y="390" width="170" height="140" rx="10"/>`,
       cuts: line("M685,390 L685,530 M600,455 L770,455"),
     },
     {
+      color: RED,
       art: `<path d="M150,470 C130,390 175,345 230,365 C280,385 285,440 250,460 L300,520 L740,520 C800,520 835,560 845,610 L855,660 Q862,725 795,725 L215,725 Q170,725 165,680 Z"/>`,
       cuts:
         line("M240,470 C215,560 255,630 340,640 L760,640") +
         line("M215,410 C230,400 245,410 240,425"),
     },
     {
+      color: GOLD,
       art:
         line("M110,830 L770,830 C870,830 905,745 865,695 C835,660 790,680 800,715", 36) +
         line("M270,725 L250,830 M640,725 L660,830", 34),
@@ -49,19 +77,23 @@ export const WORDS = {
   ],
   "north-pole": [
     {
+      color: SNOW,
       art: `<path d="M150,905 C230,800 390,790 500,805 C630,790 780,805 850,905 Z"/>`,
       cuts: line("M250,860 Q330,835 410,850"),
     },
     {
+      color: RED,
       art: `<rect x="455" y="240" width="90" height="620" rx="20"/>`,
       cuts: repeat(7, (i) => line(`M445,${330 + i * 80} L555,${270 + i * 80}`)),
     },
-    { art: dot(500, 185, 72), cuts: line("M465,165 Q470,140 495,132") },
+    { color: GOLD, art: dot(500, 185, 72), cuts: line("M465,165 Q470,140 495,132") },
     {
+      color: GREEN,
       art: `<path d="M555,320 L790,320 L850,380 L790,440 L555,440 Z"/>`,
       cuts: line("M595,365 L760,365 M595,400 L720,400"),
     },
     {
+      color: BROWN,
       art: `<path d="M445,480 L215,480 L155,540 L215,600 L445,600 Z"/>`,
       cuts: line("M250,525 L410,525 M290,560 L410,560"),
     },
@@ -78,15 +110,18 @@ export const WORDS = {
       }),
     },
     {
+      color: BROWN,
       art: `<rect x="255" y="100" width="490" height="90" rx="45"/>`,
       cuts: line("M300,145 L700,145"),
     },
     {
+      color: BROWN,
       art: `<rect x="255" y="790" width="490" height="90" rx="45"/>`,
       cuts: line("M300,835 L700,835"),
     },
     // A lump of coal.
     {
+      color: COAL,
       art: polygon([
         [690, 790],
         [770, 740],
@@ -114,6 +149,7 @@ export const WORDS = {
         }),
     },
     {
+      color: GOLD,
       art:
         line("M590,940 L860,670", 74) +
         polygon([
@@ -125,32 +161,44 @@ export const WORDS = {
     },
   ],
   snowman: [
-    { art: dot(500, 730, 200), cuts: dot(500, 650, 16) + dot(500, 740, 16) + dot(500, 830, 16) },
-    { art: dot(500, 450, 150), cuts: dot(500, 420, 15) + dot(500, 500, 15) },
+    { color: SNOW, art: dot(500, 730, 200) },
+    { color: SNOW, art: dot(500, 450, 150) },
     {
+      color: BROWN,
       art:
         line("M360,430 L210,330 M250,355 L215,290 M250,355 L180,360", 24) +
         line("M640,430 L790,330 M750,355 L785,290 M750,355 L820,360", 24),
     },
+    { color: SNOW, art: dot(500, 225, 115) },
+    // Coal eyes, smile and buttons, drawn on the snow rather than cut out.
     {
-      art: dot(500, 225, 115),
-      cuts:
-        dot(458, 200, 14) +
-        dot(542, 200, 14) +
-        repeat(5, (i) => dot(440 + i * 30, 275 + Math.abs(i - 2) * -6, 8)),
+      color: COAL,
+      gap: false,
+      art:
+        dot(458, 172, 15) +
+        dot(542, 172, 15) +
+        repeat(5, (i) => dot(440 + i * 30, 268 + (2 - Math.abs(i - 2)) * 7, 9)) +
+        dot(500, 420, 16) +
+        dot(500, 500, 16) +
+        dot(500, 650, 17) +
+        dot(500, 740, 17) +
+        dot(500, 830, 17),
     },
-    { art: `<path d="M495,230 L630,255 L495,268 Z"/>` },
+    { color: ORANGE, art: `<path d="M498,204 L625,220 L498,236 Z"/>` },
     {
+      color: RED,
       art: `${line("M375,345 Q500,385 625,345", 46)}<path d="M560,360 L610,360 L625,480 L575,480 Z"/>`,
       cuts: line("M575,450 L615,450"),
     },
     {
+      color: COAL,
       art: `<rect x="375" y="110" width="250" height="34" rx="12"/><rect x="420" y="0" width="160" height="125" rx="10"/>`,
       cuts: line("M425,95 L575,95"),
     },
   ],
   snowflake: [
     {
+      color: BLUE,
       art: repeat(
         6,
         (i) =>
@@ -166,13 +214,16 @@ export const WORDS = {
   ],
   ornament: [
     {
+      color: GOLD,
       art: `<circle cx="500" cy="120" r="42" fill="none" stroke="currentColor" stroke-width="22"/>`,
     },
     {
+      color: GOLD,
       art: `<rect x="420" y="170" width="160" height="95" rx="16"/>`,
       cuts: line("M460,185 L460,250 M500,185 L500,250 M540,185 L540,250"),
     },
     {
+      color: RED,
       art: dot(500, 590, 330),
       cuts:
         line(wave(150, 850, 520, 30, 70)) +
@@ -188,30 +239,34 @@ export const WORDS = {
       [380, 640, -70],
       [620, 640, 70],
     ].map(([cx, cy, a]) => ({
+      color: GREEN,
       art: `<ellipse cx="${cx}" cy="${cy}" rx="190" ry="80" transform="rotate(${a} ${cx} ${cy})"/>`,
       cuts: `<g transform="rotate(${a} ${cx} ${cy})">${line(`M${cx - 150},${cy} Q${cx},${cy - 15} ${cx + 150},${cy}`)}</g>`,
     })),
-    { art: line("M500,240 L470,430 M500,240 L540,430 M500,240 L505,520", 22) },
+    { color: PINE, art: line("M500,240 L470,430 M500,240 L540,430 M500,240 L505,520", 22) },
     ...[
       [455, 440],
       [545, 440],
       [500, 520],
     ].map(([cx, cy]) => ({
+      color: RED,
       art: dot(cx, cy, 58),
       cuts: line(`M${cx - 30},${cy - 15} Q${cx - 25},${cy - 35} ${cx - 5},${cy - 38}`),
     })),
     {
+      color: GOLD,
       art: `<path d="M500,200 C420,90 290,110 320,195 C340,250 450,230 500,200 Z M500,200 C580,90 710,110 680,195 C660,250 550,230 500,200 Z"/>${line("M490,210 L430,330 M510,210 L570,330", 34)}`,
       cuts: line("M480,195 C430,160 380,150 365,180") + line("M520,195 C570,160 620,150 635,180"),
     },
-    { art: dot(500, 200, 38) },
+    { color: GOLD, art: dot(500, 200, 38) },
   ],
   star: [
-    facetedStar(500, 540, 420),
-    { art: sparkle(160, 180, 75) + sparkle(860, 850, 60) + sparkle(870, 200, 45) },
+    { ...facetedStar(500, 540, 420), color: GOLD },
+    { color: GOLD, art: sparkle(160, 180, 75) + sparkle(860, 850, 60) + sparkle(870, 200, 45) },
   ],
   candle: [
     {
+      color: RED,
       art: `<path d="M395,360 Q395,330 425,330 L575,330 Q605,330 605,360 L605,820 L395,820 Z"/>`,
       cuts:
         line(
@@ -219,16 +274,19 @@ export const WORDS = {
         ) + line("M440,560 L440,760"),
     },
     {
+      color: GOLD,
       art: `<path d="M500,80 C545,160 595,210 590,262 C585,305 548,322 500,322 C452,322 415,305 410,262 C405,210 455,160 500,80 Z"/>`,
       cuts: `<path d="M500,185 C522,222 545,250 540,275 C536,296 520,302 500,302 C480,302 464,296 460,275 C455,250 478,222 500,185 Z" fill="none" stroke="currentColor" stroke-width="13"/>`,
     },
     {
+      color: GOLD_DARK,
       art: `<path d="M190,835 Q500,780 810,835 Q800,915 500,920 Q200,915 190,835 Z"/><circle cx="830" cy="870" r="52" fill="none" stroke="currentColor" stroke-width="28"/>`,
       cuts: line("M260,850 Q500,820 740,850"),
     },
   ],
   gingerbread: [
     {
+      color: BROWN,
       art: `${dot(500, 245, 145)}<path d="M380,365 L300,375 C225,380 195,430 212,472 C228,512 280,512 330,502 L368,496 L358,640 L288,820 C268,872 298,912 350,906 C390,900 410,870 430,830 L500,700 L570,830 C590,870 610,900 650,906 C702,912 732,872 712,820 L642,640 L632,496 L670,502 C720,512 772,512 788,472 C805,430 775,380 700,375 L620,365 Z"/>`,
       cuts:
         dot(445, 220, 20) +
@@ -245,6 +303,7 @@ export const WORDS = {
   ],
   cookies: [
     {
+      color: BLUE,
       art: `<ellipse cx="500" cy="790" rx="420" ry="100"/>`,
       cuts: `<ellipse cx="500" cy="775" rx="310" ry="58" fill="none" stroke="currentColor" stroke-width="13"/>`,
     },
@@ -254,6 +313,7 @@ export const WORDS = {
   ],
   milk: [
     {
+      color: SNOW,
       art: `<path d="M400,150 L600,150 L600,200 Q600,240 632,275 C690,340 705,390 705,455 L705,860 Q705,915 650,915 L350,915 Q295,915 295,860 L295,455 C295,390 310,340 368,275 Q400,240 400,200 Z"/>`,
       cuts:
         `<rect x="345" y="520" width="310" height="250" rx="24" fill="none" stroke="currentColor" stroke-width="13"/>` +
@@ -261,16 +321,19 @@ export const WORDS = {
         line("M345,420 Q352,360 395,315"),
     },
     {
+      color: RED,
       art: `<rect x="375" y="70" width="250" height="90" rx="22"/>`,
       cuts: line("M420,115 L580,115"),
     },
   ],
   eggnog: [
     {
+      color: GOLD,
       art: `<path d="M290,330 L710,330 C710,520 630,620 500,630 C370,620 290,520 290,330 Z"/>${line("M500,620 L500,830", 52)}<ellipse cx="500" cy="860" rx="175" ry="45"/>`,
       cuts: line("M345,380 Q355,500 420,560") + line("M500,830 L500,850"),
     },
     {
+      color: CREAM,
       art: `<path d="M270,340 C240,270 300,225 360,240 C370,175 450,150 500,185 C550,140 640,165 640,235 C700,220 760,275 730,340 Z"/>`,
       cuts:
         line("M330,300 Q420,265 500,285 Q580,305 665,285") +
@@ -279,13 +342,15 @@ export const WORDS = {
         dot(480, 245, 9) +
         dot(620, 255, 9),
     },
-    { art: line("M590,250 L770,60", 48), cuts: line("M600,238 L760,70", 10) },
+    { color: BROWN, art: line("M590,250 L770,60", 48), cuts: line("M600,238 L760,70", 10) },
   ],
   stocking: [
     {
+      color: GOLD,
       art: `<circle cx="300" cy="105" r="45" fill="none" stroke="currentColor" stroke-width="24"/>`,
     },
     {
+      color: RED,
       art: `<path d="M360,300 L640,300 L640,620 C640,725 575,805 480,835 L295,890 C200,915 135,855 148,780 C160,718 212,690 272,672 L360,645 Z"/>`,
       cuts:
         line("M640,590 C570,605 540,690 572,775") +
@@ -293,12 +358,14 @@ export const WORDS = {
         sparkle(500, 470, 70).replace("/>", ' fill="currentColor"/>'),
     },
     {
+      color: GREEN,
       art: `<rect x="320" y="130" width="360" height="185" rx="40"/>`,
       cuts: repeat(5, (i) => dot(375 + i * 62, 222 + (i % 2 ? 20 : -20), 14)),
     },
   ],
   fireplace: [
     {
+      color: RED,
       art: `<path fill-rule="evenodd" d="M150,270 L850,270 L850,905 L150,905 Z M300,905 L300,540 C300,440 395,395 500,395 C605,395 700,440 700,540 L700,905 Z"/>`,
       cuts:
         repeat(7, (i) =>
@@ -313,25 +380,30 @@ export const WORDS = {
         }),
     },
     {
+      color: BROWN,
       art: `<rect x="95" y="180" width="810" height="95" rx="18"/>`,
       cuts: line("M140,228 L860,228"),
     },
     {
+      color: ORANGE,
       art: `<path d="M375,835 C345,750 385,700 420,650 C430,705 458,712 470,670 C480,610 470,565 500,505 C532,565 562,610 548,668 C562,705 590,700 595,650 C632,708 660,770 622,835 Z"/>`,
       cuts: `<path d="M455,835 C440,780 470,740 500,700 C530,740 560,780 545,835" fill="none" stroke="currentColor" stroke-width="13"/>`,
     },
     {
+      color: BROWN,
       art: line("M335,880 L665,830 M335,830 L665,880", 54),
       cuts: dot(335, 880, 14) + dot(665, 880, 14),
     },
   ],
   nutcracker: [
-    { art: `<rect x="330" y="905" width="340" height="50" rx="16"/>` },
+    { color: GOLD, art: `<rect x="330" y="905" width="340" height="50" rx="16"/>` },
     {
+      color: COAL,
       art: `<rect x="380" y="790" width="105" height="125" rx="14"/><rect x="515" y="790" width="105" height="125" rx="14"/>`,
       cuts: line("M380,860 L485,860 M515,860 L620,860"),
     },
     {
+      color: RED,
       art: `<path d="M360,600 L640,600 L665,805 L335,805 Z"/>${line("M362,625 L300,790 M638,625 L700,790", 64)}`,
       cuts:
         dot(500, 650, 14) +
@@ -348,21 +420,25 @@ export const WORDS = {
         line("M425,530 L575,530"),
     },
     {
+      color: PINE,
       art: `<path d="M375,120 L625,120 L612,340 L388,340 Z"/><ellipse cx="500" cy="80" rx="55" ry="62"/>`,
       cuts: line("M383,300 L617,300") + polygon(star(500, 215, 46, 0.45)),
     },
   ],
   "hot-cocoa": [
     {
+      color: RED,
       art: `<path d="M230,330 L700,330 L680,825 Q675,885 615,885 L315,885 Q255,885 250,825 Z"/>${line("M690,420 C830,420 845,640 680,650", 62)}`,
       cuts:
         line("M240,385 L690,385") +
         `<path d="M465,560 C430,515 360,545 385,605 L465,690 L545,605 C570,545 500,515 465,560 Z"/>`,
     },
     {
+      color: PINK,
       art: `<rect x="285" y="245" width="115" height="100" rx="22" transform="rotate(-12 342 295)"/><rect x="420" y="225" width="115" height="105" rx="22" transform="rotate(8 477 277)"/><rect x="550" y="250" width="110" height="95" rx="22" transform="rotate(-6 605 297)"/>`,
     },
     {
+      color: STEEL,
       art: line(
         "M370,195 C330,150 410,120 370,60 M480,180 C440,130 520,100 480,30 M590,195 C550,150 630,120 590,60",
         30,
