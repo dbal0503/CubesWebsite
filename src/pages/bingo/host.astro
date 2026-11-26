@@ -1,0 +1,15 @@
+---
+import BingoHost from "../../components/bingo/BingoHost";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { callImageUrls } from "../../lib/bingo-images";
+import { withBase } from "../../lib/url";
+
+// Big enough to stay sharp at half a 1080p projector's height.
+const images = await callImageUrls(720);
+const idleImage = images["santa-cubie"] ?? "";
+---
+
+<BaseLayout title="Bingo caller" noindex bare>
+  <h1 class="visually-hidden">Cubesmas Bingo caller</h1>
+  <BingoHost client:load images={images} idleImage={idleImage} backUrl={withBase("/bingo/")} />
+</BaseLayout>

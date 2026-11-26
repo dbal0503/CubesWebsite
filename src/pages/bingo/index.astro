@@ -1,0 +1,140 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { callImage } from "../../lib/bingo-images";
+import { withBase } from "../../lib/url";
+---
+
+<BaseLayout
+  title="Cubesmas Bingo"
+  description="Cubesmas Bingo with Cubie: the bingo game at CUBES' holiday party, with Christmas songs and film clips."
+>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="copy">
+        <p class="eyebrow">CUBES holiday party 2026</p>
+        <h1>Cubesmas Bingo <span>with Cubie</span></h1>
+        <p class="lead">
+          Grab a printed card, cover the squares the host calls, and shout BINGO when you get five
+          in a row. Listen out for the songs and films: the host plays a bit of each one.
+        </p>
+        <a class="button button-primary" href={withBase("/bingo/host/")}>Open the caller</a>
+      </div>
+      <div class="cubies" aria-hidden="true">
+        <Image src={callImage("santa-cubie")} alt="" width={220} densities={[1, 2]} loading="eager" />
+        <Image src={callImage("reindeer-cubie")} alt="" width={180} densities={[1, 2]} loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <section class="container section rules" aria-labelledby="rules-title">
+    <div>
+      <h2 id="rules-title">How to play</h2>
+      <ol>
+        <li>The host draws a square and calls its letter and name, like "B… Santa Cubie!"</li>
+        <li>If it's on your card, cover it with a marker. The star in the middle is free.</li>
+        <li>Every card has 5 Cubie squares. The music notes are Christmas songs and the clappers are Christmas films.</li>
+        <li>Five in a row across, down or diagonally wins. Shout BINGO and show the host your card number.</li>
+      </ol>
+    </div>
+    <div class="host-box">
+      <h2>Running the game?</h2>
+      <p>
+        Open the caller on the big screen. It draws the calls, plays the songs and film clips, and
+        checks a winner's card by its number.
+      </p>
+      <div class="host-actions">
+        <a class="button button-primary" href={withBase("/bingo/host/")}>Open the caller</a>
+        <a class="button button-secondary" href={withBase("/bingo/christmas-bingo-cards.pdf")} download>
+          Printable cards (PDF)
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Cream like the home page hero, so the Cubies sit on the background they were drawn for. */
+  .hero {
+    padding-block: var(--space-7) var(--space-6);
+    background: radial-gradient(circle at 20% 30%, rgb(30 74 55 / 0.1) 0 2px, transparent 3px) 0 0 /
+      48px 48px;
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .hero .eyebrow {
+    color: #1e4a37;
+  }
+
+  .hero h1 span {
+    display: block;
+    color: #1e4a37;
+    font-size: 0.55em;
+  }
+
+  .lead {
+    max-width: 38rem;
+    font-size: var(--step-1);
+  }
+
+  .cubies {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .cubies img:last-child {
+    margin-left: calc(-1 * var(--space-5));
+  }
+
+  .section {
+    padding-block: var(--space-7) 0;
+  }
+
+  .rules {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--space-6);
+    padding-bottom: var(--space-8);
+  }
+
+  .rules ol {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.25em;
+  }
+
+  .host-box {
+    align-self: start;
+    padding: var(--space-5);
+    border-radius: var(--radius);
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+
+  .host-box h2 {
+    font-size: var(--step-2);
+  }
+
+  .host-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 48rem) {
+    .hero-inner,
+    .rules {
+      grid-template-columns: 1fr;
+    }
+
+    .cubies {
+      display: none;
+    }
+  }
+</style>

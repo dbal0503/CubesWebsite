@@ -1,0 +1,631 @@
+/* Cubesmas Bingo. CUBES maroon and cream, plus the PDF's pine green and a gold star. */
+:root {
+  --pine: #1e4a37;
+  --pine-deep: #143326;
+  --gold: #e8b23a;
+  --tile: #f6e9dc;
+}
+
+/* ---------- Card grid (the host's card check) ---------- */
+
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 2px solid var(--pine);
+  border-radius: 0.4rem;
+  overflow: hidden;
+  background: var(--pine);
+  gap: 2px;
+}
+
+.bingo-grid-letter {
+  display: grid;
+  place-items: center;
+  padding-block: 0.15em;
+  background: var(--maroon);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 6vw, 2.2rem);
+  line-height: 1.2;
+}
+
+.bingo-square {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  aspect-ratio: 1 / 1.08;
+  min-width: 0;
+  padding: 0.15rem;
+  border: 0;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: clamp(0.6rem, 2.35vw, 0.95rem);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  text-align: center;
+  hyphens: auto;
+}
+
+/* Words and pictures sit above the marker chip so a called square stays readable. */
+.bingo-square > :not(.bingo-chip) {
+  position: relative;
+  z-index: 1;
+}
+
+.bingo-square.is-cubie {
+  background: var(--tile);
+  color: var(--maroon);
+  font-size: clamp(0.5rem, 2vw, 0.75rem);
+}
+
+.bingo-cubie {
+  width: 70%;
+  max-height: 62%;
+  object-fit: contain;
+}
+
+.bingo-kind {
+  width: clamp(0.65rem, 2.6vw, 0.9rem);
+  height: auto;
+  fill: var(--pine);
+}
+
+.bingo-square.is-free {
+  background: #fdf6dd;
+  color: var(--pine);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bingo-star {
+  width: 55%;
+  fill: var(--gold);
+}
+
+/* The marker: a dauber blot behind the square's word or picture. */
+.bingo-chip {
+  position: absolute;
+  inset: 8%;
+  z-index: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--brick) 30%, transparent);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--brick) 80%, transparent);
+  animation: bingo-dab 0.18s ease-out;
+  pointer-events: none;
+}
+
+@keyframes bingo-dab {
+  from {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.bingo-square.is-winning {
+  background: #fdf0b8;
+}
+
+.bingo-square.is-winning .bingo-chip {
+  background: color-mix(in srgb, var(--gold) 45%, transparent);
+  box-shadow: inset 0 0 0 3px var(--pine);
+}
+
+.bingo-square:not(.is-marked) {
+  opacity: 0.45;
+}
+
+/* ---------- Caller screen, sized for a projector ---------- */
+
+@keyframes bingo-pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+.bh {
+  --bh-gap: 1.6vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: var(--bh-gap);
+  height: 100dvh;
+  padding: 1.8vh 2vw;
+  background:
+    radial-gradient(circle at 12% 8%, rgb(255 255 255 / 0.07) 0 2px, transparent 3px) 0 0 / 46px
+    46px,
+    radial-gradient(circle at 60% 40%, rgb(255 255 255 / 0.05) 0 1.5px, transparent 2.5px) 0 0 /
+    31px 31px,
+    var(--pine-deep);
+  color: #fff;
+  overflow: hidden;
+}
+
+.bh-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2vw;
+}
+
+.bh-top p {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.bh-title {
+  font-size: min(3.6vh, 2.4vw);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bh-title span {
+  margin-left: 0.4em;
+  color: var(--gold);
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.bh-count {
+  font-size: min(3vh, 2vw);
+  color: rgb(255 255 255 / 0.75);
+}
+
+.bh-count strong {
+  color: var(--gold);
+  font-size: 1.5em;
+}
+
+/* The centre piece: what was just called, big enough for the back row. */
+.bh-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2vh 3vw;
+  min-height: 0;
+  padding: 3vh 3vw;
+  border-radius: 2.4vh;
+  background: var(--paper);
+  box-shadow: 0 1.5vh 4vh rgb(0 0 0 / 0.35);
+  color: var(--ink);
+}
+
+.bh-call {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2vh;
+  min-width: 0;
+}
+
+/* Fixed height (two lines of the name), so the ornament stays put whatever is called. */
+.bh-call-main {
+  display: flex;
+  align-items: center;
+  height: calc(2 * min(13vh, 7.4vw));
+  gap: 2.5vw;
+}
+
+.bh-ball {
+  flex: none;
+  width: min(16vh, 11.5vw);
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 3%;
+  filter: drop-shadow(0 1vh 1.4vh rgb(42 22 20 / 0.3));
+}
+
+.bh-ball-letter {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 62px;
+}
+
+.bh-label {
+  margin: 0;
+  color: var(--maroon);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: min(13vh, 7.4vw);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.bh-label[data-long] {
+  font-size: min(10vh, 5.6vw);
+}
+
+.bh-idle {
+  color: var(--pine);
+  font-size: min(9vh, 5.4vw);
+}
+
+.bh-idle span {
+  display: block;
+  margin-top: 2vh;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: min(2.8vh, 1.8vw);
+  letter-spacing: 0;
+}
+
+.bh-call-main:not([data-rolling]) .bh-label {
+  animation: bingo-pop 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.bh-call-main:not([data-rolling]) .bh-ball {
+  animation: bingo-swing 1.6s ease-out;
+}
+
+@keyframes bingo-swing {
+  0% {
+    transform: rotate(14deg);
+  }
+  30% {
+    transform: rotate(-9deg);
+  }
+  55% {
+    transform: rotate(5deg);
+  }
+  78% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+.bh-call-main[data-rolling] :is(.bh-ball, .bh-label) {
+  opacity: 0.4;
+}
+
+.bh-play {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 1vw;
+  padding: 1.4vh 2.2vw;
+  border: 0;
+  border-radius: 99px;
+  background: var(--brick);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: min(3vh, 2vw);
+  cursor: pointer;
+}
+
+.bh-play[data-hidden] {
+  visibility: hidden;
+}
+
+.bh-play:hover {
+  background: var(--brick-hover);
+}
+
+.bh-recent {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 1vh;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: min(2.6vh, 1.6vw);
+}
+
+.bh-recent[data-empty] {
+  visibility: hidden;
+}
+
+.bh-recent-title {
+  color: var(--muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8em;
+}
+
+.bh-recent ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8vw;
+  min-height: calc(1.2em + 1.2vh);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bh-recent li {
+  overflow: hidden;
+  padding: 0.6vh 0.9vw;
+  border-radius: 99px;
+  background: var(--tile);
+  color: var(--maroon-deep);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bh-recent li b {
+  color: var(--brick-hover);
+}
+
+.bh-art {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+.bh-picture {
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  animation: bingo-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.bh-kind {
+  display: grid;
+  justify-items: center;
+  gap: 2vh;
+  color: var(--pine);
+  animation: bingo-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.bh-kind svg {
+  width: min(26vh, 18vw);
+  fill: var(--pine);
+}
+
+.bh-kind p {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: min(5vh, 3.2vw);
+}
+
+.bh-video {
+  display: grid;
+  gap: 1vh;
+  width: 100%;
+}
+
+.bh-video iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 1.2vh;
+  background: #000;
+}
+
+.bh-credit {
+  margin: 0;
+  color: var(--muted);
+  font-size: min(1.8vh, 1.2vw);
+}
+
+/* Board: one row per letter, readable across the room. */
+.bh-board {
+  display: grid;
+  gap: 0.8vh;
+}
+
+.bh-row {
+  display: grid;
+  grid-template-columns: min(5.6vh, 4vw) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.8vw;
+}
+
+.bh-row-letter {
+  display: grid;
+  place-items: center;
+  border-radius: 0.9vh;
+  background: var(--maroon);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: min(3.4vh, 2.4vw);
+}
+
+.bh-row ul {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 0.5vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bh-row li {
+  display: grid;
+  place-items: center;
+  min-height: 5.2vh;
+  padding: 0.4vh 0.5vw;
+  border-radius: 0.9vh;
+  background: rgb(255 255 255 / 0.07);
+  color: rgb(255 255 255 / 0.62);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: min(2vh, 1.15vw);
+  line-height: 1.1;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.bh-row li.is-called {
+  background: var(--cream);
+  color: var(--maroon-deep);
+  font-weight: 700;
+}
+
+.bh-row li.is-latest {
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: 0 0 0 0.35vh #fff;
+}
+
+/* Host tools: present but quieter than the game. */
+.bh-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8vh 0.7vw;
+  font-size: min(1.7vh, 1.15vw);
+}
+
+.bh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6vw;
+  min-height: 4.4vh;
+  padding: 0.6vh 1.2vw;
+  border: 1.5px solid rgb(255 255 255 / 0.35);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--cream);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: inherit;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.bh-btn:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.bh-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bh-draw {
+  border-color: var(--brick);
+  background: var(--brick);
+  color: #fff;
+  font-size: 1.2em;
+}
+
+.bh-draw:hover:not(:disabled) {
+  background: var(--brick-hover);
+}
+
+.bh-btn-gold {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.bh-btn-gold:hover:not(:disabled) {
+  background: #f2c65a;
+}
+
+.bh-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5vw;
+  margin-left: auto;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.bh-check input {
+  width: 5.5em;
+  min-height: 4.4vh;
+  padding: 0 0.6em;
+  border: 1.5px solid rgb(255 255 255 / 0.35);
+  border-radius: 0.8vh;
+  background: rgb(255 255 255 / 0.95);
+  color: var(--ink);
+  font: inherit;
+}
+
+.bh-back {
+  color: rgb(255 255 255 / 0.7);
+}
+
+.bh-back:hover {
+  color: #fff;
+}
+
+.bh a:focus-visible,
+.bh button:focus-visible,
+.bh input:focus-visible {
+  outline-color: var(--gold);
+}
+
+/* A laptop window or phone: let the page scroll instead of squeezing. */
+@media (max-width: 56rem), (max-height: 34rem) {
+  .bh {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+    padding: var(--space-4);
+  }
+
+  .bh-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .bh-art {
+    height: 40vh;
+  }
+
+  .bh-row ul {
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  }
+
+  .bh-row li,
+  .bh-controls {
+    font-size: 0.8rem;
+  }
+}
+
+.bingo-dialog {
+  width: min(100% - 2rem, 34rem, 60vh);
+  max-height: 96dvh;
+  overflow: auto;
+  padding: var(--space-5);
+  border: 0;
+  border-radius: 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.4);
+}
+
+.bingo-dialog::backdrop {
+  background: rgb(20 51 38 / 0.7);
+}
+
+.bingo-dialog h2 {
+  margin-bottom: var(--space-2);
+  font-size: var(--step-3);
+}
+
+.bingo-dialog h2[data-win] {
+  color: var(--pine);
+}
+
+.bingo-dialog-verdict {
+  color: var(--muted);
+}
+
+.bingo-dialog form {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-4);
+}

@@ -12,9 +12,11 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** Page only: no header, footer or chat, for full-screen pages like the bingo caller. */
+  bare?: boolean;
 }
 
-const { title, description = site.description, noindex = false } = Astro.props;
+const { title, description = site.description, noindex = false, bare = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.fullName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -43,13 +45,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Font cssVariable="--font-body" preload />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
-    <main id="main" tabindex="-1">
-      <slot />
-    </main>
-    <Footer />
-    <QbChatIsland />
+    {
+      bare ? (
+        <main id="main">
+          <slot />
+        </main>
+      ) : (
+        <>
+          <a class="skip-link" href="#main">Skip to content</a>
+          <Header />
+          <main id="main" tabindex="-1">
+            <slot />
+          </main>
+          <Footer />
+          <QbChatIsland />
+        </>
+      )
+    }
   </body>
 </html>
 
