@@ -1,0 +1,4 @@
+# Dependencies allowed to run install scripts. esbuild (pulled in by
+# Storybook) ships prebuilt binaries; its script only re-checks them.
+allowBuilds:
+  esbuild: false
